@@ -26,9 +26,23 @@ public abstract class BaseSensor implements Sensor {
             sensorsService.updateSensorStatus(this.getClass().getName(), sensorStatus);
     }
 
+    public BaseSensor() {}
+
     public BaseSensor(SensorsService sensorsService, Envelope.Sensitivity sensitivity, Integer priority) {
         this.sensorsService = sensorsService;
         this.sensitivity = sensitivity;
+        this.priority = priority;
+    }
+
+    public void setSensorsService(SensorsService sensorsService) {
+        this.sensorsService = sensorsService;
+    }
+
+    public void setSensitivity(Envelope.Sensitivity sensitivity) {
+        this.sensitivity = sensitivity;
+    }
+
+    public void setPriority(Integer priority) {
         this.priority = priority;
     }
 

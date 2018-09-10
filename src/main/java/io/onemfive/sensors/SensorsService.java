@@ -104,26 +104,6 @@ public class SensorsService extends BaseService {
         handleAll(envelope);
     }
 
-    @Override
-    public void handleCommand(Envelope e) {
-        SensorsServiceCommand c = (SensorsServiceCommand)DLC.getData(SensorsServiceCommand.class,e);
-        if(c == null) {
-            LOG.warning("No SensorsServiceCommand found in Envelope data while sending to SensorsService.");
-            c = new SensorsServiceCommand();
-            c.errorCode = SensorsServiceCommand.REQUEST_REQUIRED;
-            DLC.addData(SensorsServiceCommand.class,c,e);
-            return;
-        }
-        if(c.sensorManagerImplementation != null) {
-            try {
-                sensorManager = (SensorManager) Class.forName(c.sensorManagerImplementation).newInstance();
-            } catch (Exception e1) {
-                c.exception = e1;
-                return;
-            }
-        }
-    }
-
     private void handleAll(Envelope e) {
         SensorRequest request = (SensorRequest)DLC.getData(SensorRequest.class,e);
         if(request == null) {
@@ -317,6 +297,48 @@ public class SensorsService extends BaseService {
         super.start(properties);
         LOG.info("Starting...");
         updateStatus(ServiceStatus.STARTING);
+
+        // Parameters
+        String sensorManagerClass = properties.getProperty(SensorManager.class.getName());
+        if(sensorManagerClass == null) {
+            LOG.warning(SensorManager.class.getName()+" property required to start SensorsService.");
+            return false;
+        }
+        String sensorsConfig = properties.getProperty(Sensor.class.getName());
+        if(sensorsConfig == null) {
+            LOG.warning(Sensor.class.getName()+" property required to start SensorsService.");
+            return false;
+        }
+
+        // Sensor Manager
+        try {
+            sensorManager = (SensorManager)Class.forName(sensorManagerClass).newInstance();
+        } catch (Exception e) {
+            LOG.warning(e.getLocalizedMessage());
+            return false;
+        }
+
+        // Sensors
+        String[] sensorConfigStrings = sensorsConfig.split(":");
+        String[] sp;
+        Sensor sensor = null;
+        for(String sc : sensorConfigStrings) {
+            sp = sc.split(",");
+            String sensorClass = sp[0];
+            String sensitivity = sp[1];
+            String priorityStr = sp[2];
+            try {
+                sensor = (Sensor)Class.forName(sensorClass).newInstance();
+            } catch (Exception e) {
+                LOG.warning(e.getLocalizedMessage());
+            }
+            if(sensor != null) {
+                BaseSensor baseSensor = (BaseSensor)sensor;
+                baseSensor.setSensitivity(Envelope.Sensitivity.valueOf(sensitivity));
+                baseSensor.setPriority(Integer.parseInt(priorityStr));
+                sensorManager.registerSensor(sensor);
+            }
+        }
         sensorManager.init(properties);
         return true;
     }
