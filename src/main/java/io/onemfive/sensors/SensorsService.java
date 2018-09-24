@@ -84,9 +84,8 @@ public class SensorsService extends BaseService {
 
     private SensorManager sensorManager;
 
-    public SensorsService(MessageProducer producer, ServiceStatusListener serviceStatusListener, SensorManager sensorManager) {
-        super(producer, serviceStatusListener);
-        this.sensorManager = sensorManager;
+    public SensorsService() {
+        super();
     }
 
     @Override
@@ -322,6 +321,7 @@ public class SensorsService extends BaseService {
         String[] sensorConfigStrings = sensorsConfig.split(":");
         String[] sp;
         Sensor sensor = null;
+        LOG.info("Building sensors configuration...");
         for(String sc : sensorConfigStrings) {
             sp = sc.split(",");
             String sensorClass = sp[0];
@@ -337,10 +337,10 @@ public class SensorsService extends BaseService {
                 baseSensor.setSensitivity(Envelope.Sensitivity.valueOf(sensitivity));
                 baseSensor.setPriority(Integer.parseInt(priorityStr));
                 sensorManager.registerSensor(sensor);
+                LOG.info("Registered sensor "+sensor.getClass().getName());
             }
         }
-        sensorManager.init(properties);
-        return true;
+        return sensorManager.init(properties);
     }
 
     @Override
