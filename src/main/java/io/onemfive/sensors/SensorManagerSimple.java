@@ -113,6 +113,7 @@ public class SensorManagerSimple extends SensorManagerBase {
         // TODO: Add loop with checks
         Collection<Sensor> sensors = registeredSensors.values();
         for(final Sensor s : sensors) {
+            LOG.info("Launching sensor "+s.getClass().getName());
             new AppThread(new Runnable() {
                 @Override
                 public void run() {
@@ -129,6 +130,7 @@ public class SensorManagerSimple extends SensorManagerBase {
         // TODO: Add loop with checks
         Collection<Sensor> sensors = activeSensors.values();
         for(final Sensor s : sensors) {
+            LOG.info("Beginning Shutdown of sensor "+s.getClass().getName());
             new AppThread(new Runnable() {
                 @Override
                 public void run() {
