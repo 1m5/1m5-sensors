@@ -122,11 +122,11 @@ public class SensorsService extends BaseService {
         if(sensor != null) {
             switch (r.getOperation()) {
                 case OPERATION_SEND : {
-                    LOG.fine("Sending Envelope to selected Sensor...");
+                    LOG.info("Sending Envelope to selected Sensor...");
                     sensor.send(e);
                 }
                 case OPERATION_REPLY : {
-                    LOG.fine("Replying with Envelope to requester...");
+                    LOG.info("Replying with Envelope to requester...");
                     sensor.reply(e);
                 }
                 default: {
@@ -313,7 +313,8 @@ public class SensorsService extends BaseService {
         try {
             sensorManager = (SensorManager)Class.forName(sensorManagerClass).newInstance();
         } catch (Exception e) {
-            LOG.warning(e.getLocalizedMessage());
+            LOG.warning("Exception caught while creating instance of Sensor Manager "+sensorManagerClass);
+            e.printStackTrace();
             return false;
         }
 
@@ -330,12 +331,14 @@ public class SensorsService extends BaseService {
             try {
                 sensor = (Sensor)Class.forName(sensorClass).newInstance();
             } catch (Exception e) {
-                LOG.warning(e.getLocalizedMessage());
+                LOG.warning("Exception caught while creating instance of Sensor "+sensorClass+" with sensitivity "+sensitivity+" and priority "+priorityStr);
+                e.printStackTrace();
             }
             if(sensor != null) {
                 BaseSensor baseSensor = (BaseSensor)sensor;
                 baseSensor.setSensitivity(Envelope.Sensitivity.valueOf(sensitivity));
                 baseSensor.setPriority(Integer.parseInt(priorityStr));
+                baseSensor.setSensorsService(this);
                 sensorManager.registerSensor(sensor);
                 LOG.info("Registered sensor "+sensor.getClass().getName());
             }
