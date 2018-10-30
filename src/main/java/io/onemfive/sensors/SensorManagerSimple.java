@@ -86,11 +86,6 @@ public class SensorManagerSimple extends SensorManagerBase {
     }
 
     @Override
-    public void updatePeer(Peer peer) {
-        peers.put(peer.getAddress(), peer);
-    }
-
-    @Override
     public void sensorError(final String sensorID) {
         // Sensor has Error, restart it if number of restarts is not greater than 3
         if(activeSensors.get(sensorID) != null) {

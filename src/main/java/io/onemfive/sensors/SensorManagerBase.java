@@ -31,6 +31,11 @@ public abstract class SensorManagerBase implements SensorManager {
     }
 
     @Override
+    public void updatePeer(Peer peer) {
+        peers.put(peer.getAddress(), peer);
+    }
+
+    @Override
     public Map<String, Peer> getAllPeers() {
         return peers;
     }
