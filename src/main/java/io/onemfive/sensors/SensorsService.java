@@ -211,6 +211,12 @@ public class SensorsService extends BaseService {
                     updateStatus(ServiceStatus.DEGRADED_RUNNING);
                 break;
             }
+            case NETWORK_BLOCKED: {
+                if(currentServiceStatus == ServiceStatus.RUNNING
+                        || currentServiceStatus == ServiceStatus.PARTIALLY_RUNNING)
+                    updateStatus(ServiceStatus.DEGRADED_RUNNING);
+                break;
+            }
             case NETWORK_ERROR: {
                 if(currentServiceStatus == ServiceStatus.RUNNING
                         || currentServiceStatus == ServiceStatus.PARTIALLY_RUNNING)
