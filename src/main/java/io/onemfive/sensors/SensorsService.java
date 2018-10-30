@@ -188,6 +188,11 @@ public class SensorsService extends BaseService {
                     updateStatus(ServiceStatus.PARTIALLY_RUNNING);
                 break;
             }
+            case NETWORK_PORT_CONFLICT: {
+                if(currentServiceStatus == ServiceStatus.RUNNING)
+                    updateStatus(ServiceStatus.PARTIALLY_RUNNING);
+                break;
+            }
             case NETWORK_CONNECTING: {
                 if(currentServiceStatus == ServiceStatus.RUNNING)
                     updateStatus(ServiceStatus.PARTIALLY_RUNNING);
