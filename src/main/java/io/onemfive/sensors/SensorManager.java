@@ -14,5 +14,6 @@ public interface SensorManager {
     void updatePeer(Peer peer);
     Map<String,Peer> getAllPeers();
     void sensorError(String sensorClass);
+    void sendToBus(Envelope envelope);
     boolean shutdown();
 }

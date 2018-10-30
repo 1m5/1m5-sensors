@@ -1,5 +1,6 @@
 package io.onemfive.sensors;
 
+import io.onemfive.data.Envelope;
 import io.onemfive.data.Peer;
 
 import java.util.HashMap;
@@ -44,5 +45,10 @@ public abstract class SensorManagerBase implements SensorManager {
     @Override
     public Map<String, Peer> getAllPeers() {
         return peers;
+    }
+
+    @Override
+    public void sendToBus(Envelope envelope) {
+        sensorsService.sendToBus(envelope);
     }
 }
