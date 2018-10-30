@@ -17,6 +17,93 @@ public class SensorManagerSimple extends SensorManagerBase {
     private Logger LOG = Logger.getLogger(SensorManagerSimple.class.getName());
 
     @Override
+    public void updateSensorStatus(String sensorID, SensorStatus sensorStatus) {
+        switch (sensorStatus) {
+            case INITIALIZING: {
+
+                break;
+            }
+            case STARTING: {
+
+                break;
+            }
+            case WAITING: {
+
+                break;
+            }
+            case NETWORK_WARMUP: {
+
+                break;
+            }
+            case NETWORK_PORT_CONFLICT: {
+
+                break;
+            }
+            case NETWORK_CONNECTING: {
+
+                break;
+            }
+            case NETWORK_CONNECTED: {
+
+                break;
+            }
+            case NETWORK_STOPPING: {
+
+                break;
+            }
+            case NETWORK_STOPPED: {
+
+                break;
+            }
+            case NETWORK_BLOCKED: {
+
+                break;
+            }
+            case NETWORK_ERROR: {
+
+                break;
+            }
+            case PAUSING: {
+
+                break;
+            }
+            case PAUSED: {
+
+                break;
+            }
+            case UNPAUSING: {
+
+                break;
+            }
+            case SHUTTING_DOWN: {
+                break; // Not handling
+            }
+            case GRACEFULLY_SHUTTING_DOWN: {
+                break; // Not handling
+            }
+            case SHUTDOWN: {
+
+                break;
+            }
+            case GRACEFULLY_SHUTDOWN: {
+
+                break;
+            }
+            case RESTARTING: {
+
+                break;
+            }
+            case ERROR: {
+
+                break;
+            }
+            default: LOG.warning("Sensor Status not being handled: "+sensorStatus.name());
+        }
+        // Now update the Service's status based on the this Sensor's status
+        sensorsService.determineStatus(sensorStatus);
+    }
+
+    @Override
     public Sensor selectSensor(Envelope e) {
         Sensor sensor = null;
         Route r = e.getRoute();

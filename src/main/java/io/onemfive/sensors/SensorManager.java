@@ -10,6 +10,7 @@ public interface SensorManager {
     boolean init(Properties properties);
     Sensor selectSensor(Envelope envelope);
     void registerSensor(Sensor sensor);
+    void updateSensorStatus(final String sensorID, SensorStatus sensorStatus);
     void updatePeer(Peer peer);
     Map<String,Peer> getAllPeers();
     void sensorError(String sensorClass);

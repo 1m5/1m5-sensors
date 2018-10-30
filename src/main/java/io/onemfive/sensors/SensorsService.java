@@ -159,10 +159,9 @@ public class SensorsService extends BaseService {
 
     /**
      * Based on supplied SensorStatus, set the SensorsService status.
-     * @param sensorID
      * @param sensorStatus
      */
-    void updateSensorStatus(final String sensorID, SensorStatus sensorStatus) {
+    void determineStatus(SensorStatus sensorStatus) {
         ServiceStatus currentServiceStatus = getServiceStatus();
         LOG.info("Status updated to: "+sensorStatus.name());
         switch (sensorStatus) {
@@ -285,7 +284,6 @@ public class SensorsService extends BaseService {
                 if(currentServiceStatus == ServiceStatus.RUNNING
                         || currentServiceStatus == ServiceStatus.PARTIALLY_RUNNING)
                     updateStatus(ServiceStatus.DEGRADED_RUNNING);
-                sensorManager.sensorError(sensorID);
                 break;
             }
             default: LOG.warning("Sensor Status not being handled: "+sensorStatus.name());
@@ -349,7 +347,7 @@ public class SensorsService extends BaseService {
                 BaseSensor baseSensor = (BaseSensor)sensor;
                 baseSensor.setSensitivity(Envelope.Sensitivity.valueOf(sensitivity));
                 baseSensor.setPriority(Integer.parseInt(priorityStr));
-                baseSensor.setSensorsService(this);
+                baseSensor.setSensorManager(sensorManager);
                 sensorManager.registerSensor(sensor);
                 LOG.info("Registered sensor "+sensor.getClass().getName());
             }

@@ -13,7 +13,7 @@ import java.util.Map;
  */
 public abstract class BaseSensor implements Sensor {
 
-    protected SensorsService sensorsService;
+    protected SensorManager sensorManager;
     private SensorStatus sensorStatus = SensorStatus.NOT_INITIALIZED;
     protected Integer restartAttempts = 0;
     private Envelope.Sensitivity sensitivity;
@@ -22,20 +22,20 @@ public abstract class BaseSensor implements Sensor {
 
     protected void updateStatus(SensorStatus sensorStatus) {
         this.sensorStatus = sensorStatus;
-        if(sensorsService != null) // Might be null during localized testing
-            sensorsService.updateSensorStatus(this.getClass().getName(), sensorStatus);
+        if(sensorManager != null) // Might be null during localized testing
+            sensorManager.updateSensorStatus(this.getClass().getName(), sensorStatus);
     }
 
     public BaseSensor() {}
 
-    public BaseSensor(SensorsService sensorsService, Envelope.Sensitivity sensitivity, Integer priority) {
-        this.sensorsService = sensorsService;
+    public BaseSensor(SensorManager sensorManager, Envelope.Sensitivity sensitivity, Integer priority) {
+        this.sensorManager = sensorManager;
         this.sensitivity = sensitivity;
         this.priority = priority;
     }
 
-    public void setSensorsService(SensorsService sensorsService) {
-        this.sensorsService = sensorsService;
+    public void setSensorManager(SensorManager sensorManager) {
+        this.sensorManager = sensorManager;
     }
 
     public void setSensitivity(Envelope.Sensitivity sensitivity) {

@@ -13,6 +13,12 @@ public abstract class SensorManagerBase implements SensorManager {
 
     protected Map<String, Peer> peers = new HashMap<>();
 
+    protected SensorsService sensorsService;
+
+    void setSensorsService(SensorsService sensorsService) {
+        this.sensorsService = sensorsService;
+    }
+
     @Override
     public void registerSensor(Sensor sensor) {
         registeredSensors.put(sensor.getClass().getName(), sensor);
