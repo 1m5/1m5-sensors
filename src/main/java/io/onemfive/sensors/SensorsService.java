@@ -264,6 +264,7 @@ public class SensorsService extends BaseService {
         // Sensor Manager
         try {
             sensorManager = (SensorManager)Class.forName(sensorManagerClass).newInstance();
+            ((SensorManagerBase)sensorManager).setSensorsService(this);
         } catch (Exception e) {
             LOG.warning("Exception caught while creating instance of Sensor Manager "+sensorManagerClass);
             e.printStackTrace();
