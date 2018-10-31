@@ -53,11 +53,11 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case NETWORK_STOPPED: {
                 LOG.info(sensorID + " reporting stopped.");
-                if(sensorID != null && sensorID.equals("io.onemfive.i2p.I2PSensor") && activeSensors.containsKey("io.onemfive.i2p.I2PSensor")) {
+                if(activeSensors.containsKey(sensorID)) {
                     // Active I2P Sensor Stopped, attempt to restart
-                    Sensor sensor = activeSensors.get("io.onemfive.i2p.I2PSensor");
+                    Sensor sensor = activeSensors.get(sensorID);
                     if(sensor.restart()) {
-                        LOG.info("I2P Sensor restarted after disconnection.");
+                        LOG.info(sensorID+" restarted after disconnection.");
                     }
                 }
                 break;
