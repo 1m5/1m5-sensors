@@ -84,10 +84,12 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case SHUTTING_DOWN: {
                 LOG.info(sensorID + " reporting shutting down....");
+                activeSensors.remove(sensorID);
                 break;
             }
             case GRACEFULLY_SHUTTING_DOWN: {
                 LOG.info(sensorID + " reporting gracefully shutting down....");
+                activeSensors.remove(sensorID);
                 break;
             }
             case SHUTDOWN: {
