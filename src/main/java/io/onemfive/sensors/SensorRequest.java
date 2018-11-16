@@ -8,6 +8,7 @@ public class SensorRequest extends ServiceRequest {
     public static int TO_PEER_WRONG_NETWORK = 2;
     public static int NO_CONTENT = 3;
     public static int TO_PEER_NOT_FOUND = 4;
+    public static int SENDING_FAILED = 5;
 
     public DID from;
     public DID to;
