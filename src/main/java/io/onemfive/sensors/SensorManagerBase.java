@@ -21,6 +21,11 @@ public abstract class SensorManagerBase implements SensorManager {
     }
 
     @Override
+    public void suspend(Envelope envelope) {
+        sensorsService.suspend(envelope);
+    }
+
+    @Override
     public void registerSensor(Sensor sensor) {
         registeredSensors.put(sensor.getClass().getName(), sensor);
     }

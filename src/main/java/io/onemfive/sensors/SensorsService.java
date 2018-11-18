@@ -100,6 +100,10 @@ public class SensorsService extends BaseService {
         }
     }
 
+    void suspend(Envelope envelope) {
+        deadLetter(envelope);
+    }
+
     /**
      * Based on supplied SensorStatus, set the SensorsService status.
      * @param sensorStatus

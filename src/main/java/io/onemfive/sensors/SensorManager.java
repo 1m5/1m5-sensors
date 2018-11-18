@@ -15,5 +15,6 @@ public interface SensorManager {
     Map<String,Peer> getAllPeers();
     void sensorError(String sensorClass);
     void sendToBus(Envelope envelope);
+    void suspend(Envelope envelope);
     boolean shutdown();
 }
