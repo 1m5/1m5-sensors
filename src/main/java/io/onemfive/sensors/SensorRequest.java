@@ -12,5 +12,5 @@ public class SensorRequest extends ServiceRequest {
 
     public DID from;
     public DID to;
-    public byte[] content;
+    public String content;
 }
