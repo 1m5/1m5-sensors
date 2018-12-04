@@ -1,7 +1,7 @@
 package io.onemfive.sensors;
 
 import io.onemfive.data.Envelope;
-import io.onemfive.data.Peer;
+import io.onemfive.data.NetworkPeer;
 
 import java.util.Map;
 import java.util.Properties;
@@ -11,8 +11,8 @@ public interface SensorManager {
     Sensor selectSensor(Envelope envelope);
     void registerSensor(Sensor sensor);
     void updateSensorStatus(final String sensorID, SensorStatus sensorStatus);
-    void updatePeer(Peer peer);
-    Map<String,Peer> getAllPeers();
+    void updatePeer(NetworkPeer peer);
+    Map<String,NetworkPeer> getAllPeers();
     void sensorError(String sensorClass);
     void sendToBus(Envelope envelope);
     void suspend(Envelope envelope);

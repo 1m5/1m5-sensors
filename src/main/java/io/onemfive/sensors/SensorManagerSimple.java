@@ -2,7 +2,6 @@ package io.onemfive.sensors;
 
 import io.onemfive.core.util.AppThread;
 import io.onemfive.data.Envelope;
-import io.onemfive.data.Peer;
 import io.onemfive.data.Route;
 
 import java.util.*;

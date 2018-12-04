@@ -1,7 +1,7 @@
 package io.onemfive.sensors;
 
 import io.onemfive.data.Envelope;
-import io.onemfive.data.Peer;
+import io.onemfive.data.NetworkPeer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -18,7 +18,7 @@ public abstract class BaseSensor implements Sensor {
     protected Integer restartAttempts = 0;
     private Envelope.Sensitivity sensitivity;
     private Integer priority;
-    protected Map<String,Peer> peers = new HashMap<>();
+    protected Map<String,NetworkPeer> peers = new HashMap<>();
 
     protected void updateStatus(SensorStatus sensorStatus) {
         this.sensorStatus = sensorStatus;
@@ -47,7 +47,7 @@ public abstract class BaseSensor implements Sensor {
     }
 
     @Override
-    public Map<String, Peer> getPeers() {
+    public Map<String, NetworkPeer> getPeers() {
         return peers;
     }
 

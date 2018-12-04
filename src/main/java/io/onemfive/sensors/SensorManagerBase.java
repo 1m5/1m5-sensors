@@ -1,7 +1,7 @@
 package io.onemfive.sensors;
 
 import io.onemfive.data.Envelope;
-import io.onemfive.data.Peer;
+import io.onemfive.data.NetworkPeer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -12,7 +12,7 @@ public abstract class SensorManagerBase implements SensorManager {
     protected final Map<String, Sensor> activeSensors = new HashMap<>();
     protected final Map<String, Sensor> blockedSensors = new HashMap<>();
 
-    protected Map<String, Peer> peers = new HashMap<>();
+    protected Map<String, NetworkPeer> peers = new HashMap<>();
 
     protected SensorsService sensorsService;
 
@@ -43,12 +43,12 @@ public abstract class SensorManagerBase implements SensorManager {
     }
 
     @Override
-    public void updatePeer(Peer peer) {
-        peers.put(peer.getAddress(), peer);
+    public void updatePeer(NetworkPeer peer) {
+        peers.put(peer.getFullAddress(), peer);
     }
 
     @Override
-    public Map<String, Peer> getAllPeers() {
+    public Map<String, NetworkPeer> getAllPeers() {
         return peers;
     }
 
