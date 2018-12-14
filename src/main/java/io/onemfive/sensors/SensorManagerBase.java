@@ -44,7 +44,7 @@ public abstract class SensorManagerBase implements SensorManager {
 
     @Override
     public void updatePeer(NetworkPeer peer) {
-        peers.put(peer.getFullAddress(), peer);
+        peers.put(peer.getAddress(), peer);
     }
 
     @Override
