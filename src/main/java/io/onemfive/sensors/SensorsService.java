@@ -72,19 +72,7 @@ public class SensorsService extends BaseService {
 
     public void sendToBus(Envelope envelope) {
         LOG.info("Sending request to service bus from Sensors Service...");
-        int maxAttempts = 30;
-        int attempts = 0;
-        while(!producer.send(envelope) && ++attempts <= maxAttempts) {
-            synchronized (this) {
-                try {
-                    this.wait(100);
-                } catch (InterruptedException e) {}
-            }
-        }
-        if(attempts == maxAttempts) {
-            // failed
-            DLC.addErrorMessage("500",envelope);
-        }
+        producer.send(envelope);
     }
 
     void suspend(Envelope envelope) {
