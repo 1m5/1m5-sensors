@@ -54,13 +54,15 @@ public class SensorsService extends BaseService {
                 case OPERATION_SEND : {
                     LOG.info("Sending Envelope to selected Sensor...");
                     sensor.send(e);
+                    break;
                 }
                 case OPERATION_REPLY : {
                     LOG.info("Replying with Envelope to requester...");
                     sensor.reply(e);
+                    break;
                 }
                 default: {
-                    LOG.warning("Operation not supported. Sending to Dead Letter queue.");
+                    LOG.warning("Operation ("+r.getOperation()+") not supported. Sending to Dead Letter queue.");
                     deadLetter(e);
                 }
             }
