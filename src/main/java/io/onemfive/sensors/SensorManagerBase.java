@@ -12,6 +12,7 @@ public abstract class SensorManagerBase implements SensorManager {
     protected final Map<String, Sensor> activeSensors = new HashMap<>();
     protected final Map<String, Sensor> blockedSensors = new HashMap<>();
 
+    protected NetworkPeer localPeer;
     protected Map<String, NetworkPeer> peers = new HashMap<>();
 
     protected SensorsService sensorsService;
@@ -30,16 +31,24 @@ public abstract class SensorManagerBase implements SensorManager {
         registeredSensors.put(sensor.getClass().getName(), sensor);
     }
 
-    Map<String, Sensor> getRegisteredSensors() {
+    protected Map<String, Sensor> getRegisteredSensors() {
         return registeredSensors;
     }
 
-    Map<String, Sensor> getActiveSensors() {
+    protected Map<String, Sensor> getActiveSensors() {
         return activeSensors;
     }
 
-    Map<String, Sensor> getBlockedSensors(){
+    protected Map<String, Sensor> getBlockedSensors(){
         return blockedSensors;
+    }
+
+    protected void setLocalPeer(NetworkPeer localPeer) {
+        this.localPeer = localPeer;
+    }
+
+    protected NetworkPeer getLocalPeer() {
+        return localPeer;
     }
 
     @Override
