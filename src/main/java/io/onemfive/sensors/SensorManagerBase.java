@@ -31,23 +31,23 @@ public abstract class SensorManagerBase implements SensorManager {
         registeredSensors.put(sensor.getClass().getName(), sensor);
     }
 
-    protected Map<String, Sensor> getRegisteredSensors() {
+    Map<String, Sensor> getRegisteredSensors() {
         return registeredSensors;
     }
 
-    protected Map<String, Sensor> getActiveSensors() {
+    Map<String, Sensor> getActiveSensors() {
         return activeSensors;
     }
 
-    protected Map<String, Sensor> getBlockedSensors(){
+    Map<String, Sensor> getBlockedSensors(){
         return blockedSensors;
     }
 
-    protected void setLocalPeer(NetworkPeer localPeer) {
+    public void setLocalPeer(NetworkPeer localPeer) {
         this.localPeer = localPeer;
     }
 
-    protected NetworkPeer getLocalPeer() {
+    public NetworkPeer getLocalPeer() {
         return localPeer;
     }
 
