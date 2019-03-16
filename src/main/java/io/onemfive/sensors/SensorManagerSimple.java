@@ -4,6 +4,7 @@ import io.onemfive.core.util.AppThread;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.Route;
 
+import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -125,8 +126,8 @@ public class SensorManagerSimple extends SensorManagerBase {
             sensor = lookupByOperation(r.getOperation());
         }
         // Lookup by URL
-        if(sensor == null && e.getURL() != null && e.getURL().getProtocol() != null){
-            sensor = lookupByURL(e.getURL().getPath());
+        if(sensor == null && e.getURL() != null && e.getURL() != null){
+            sensor = lookupByURL(e.getURL());
         }
         return sensor;
     }
@@ -158,15 +159,17 @@ public class SensorManagerSimple extends SensorManagerBase {
         return highest;
     }
 
-    protected Sensor lookupByURL(String url) {
+    protected Sensor lookupByURL(URL url) {
         int highestPriority = 0;
+        String protocol = url.getProtocol();
+        String path = url.getPath();
         Sensor highest = null;
         Collection<Sensor> sensors = activeSensors.values();
         String[] urls;
         for(Sensor s : sensors) {
             urls = s.getURLBeginsWith();
             for(String u : urls) {
-                if(u.equals(url) && s.getPriority() >= highestPriority)
+                if(u.equals(protocol) && s.getPriority() >= highestPriority)
                     highest = s;
             }
         }
@@ -174,7 +177,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             for(Sensor s : sensors) {
                 urls = s.getURLEndsWith();
                 for(String u : urls) {
-                    if(u.equals(url) && s.getPriority() >= highestPriority)
+                    if(u.equals(path) && s.getPriority() >= highestPriority)
                         highest = s;
                 }
             }
