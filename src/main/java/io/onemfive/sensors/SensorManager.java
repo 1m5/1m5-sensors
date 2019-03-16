@@ -7,11 +7,16 @@ import java.util.Map;
 import java.util.Properties;
 
 public interface SensorManager {
+
+    String TOR_SENSOR_NAME = "io.onemfive.tor.client.TorClientSensor";
+    String I2P_SENSOR_NAME = "io.onemfive.i2p.I2PSensor";
+    String IDN_SENSOR_NAME = "io.onemfive.idn.IDNSensor";
+
     boolean init(Properties properties);
     Sensor selectSensor(Envelope envelope);
     void registerSensor(Sensor sensor);
     void updateSensorStatus(final String sensorID, SensorStatus sensorStatus);
-    void updatePeer(NetworkPeer peer);
+    void savePeer(NetworkPeer peer);
     Map<String,NetworkPeer> getAllPeers();
     void sensorError(String sensorClass);
     void sendToBus(Envelope envelope);

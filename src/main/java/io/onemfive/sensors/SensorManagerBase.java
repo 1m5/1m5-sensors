@@ -43,6 +43,15 @@ public abstract class SensorManagerBase implements SensorManager {
         return blockedSensors;
     }
 
+    public SensorStatus getSensorStatus(String sensor) {
+        Sensor s = activeSensors.get(sensor);
+        if(s == null) {
+            return SensorStatus.UNREGISTERED;
+        } else {
+            return s.getStatus();
+        }
+    }
+
     public void setLocalPeer(NetworkPeer localPeer) {
         this.localPeer = localPeer;
     }
@@ -52,7 +61,7 @@ public abstract class SensorManagerBase implements SensorManager {
     }
 
     @Override
-    public void updatePeer(NetworkPeer peer) {
+    public void savePeer(NetworkPeer peer) {
         peers.put(peer.getAddress(), peer);
     }
 

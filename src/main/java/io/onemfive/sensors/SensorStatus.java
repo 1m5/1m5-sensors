@@ -6,6 +6,7 @@ package io.onemfive.sensors;
  * @author objectorange
  */
 public enum SensorStatus {
+    UNREGISTERED, // 0 - Unknown/not registered yet
     // Sensor Starting Up
     NOT_INITIALIZED, // 1 - Initial state
     INITIALIZING, // 2 - Initializing Sensor's environment including configuration of Networking component

@@ -7,7 +7,7 @@ import io.onemfive.data.NetworkPeer;
 import java.util.Map;
 
 /**
- * TODO: Add Description
+ * Interface for all Sensors.
  *
  * @author objectorange
  */
