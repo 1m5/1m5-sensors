@@ -5,6 +5,8 @@ import io.onemfive.data.Envelope;
 import io.onemfive.data.Route;
 import io.onemfive.data.util.DLC;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
@@ -26,6 +28,7 @@ public class SensorsService extends BaseService {
     private Properties config;
 
     private SensorManager sensorManager;
+    private File sensorsDirectory;
 
     public SensorsService() {
         super();
@@ -240,6 +243,18 @@ public class SensorsService extends BaseService {
         if(sensorsConfig == null) {
             LOG.warning(Sensor.class.getName()+" property required to start SensorsService.");
             return false;
+        }
+
+        // Directories
+        try {
+            sensorsDirectory = new File(getServiceDirectory().getCanonicalPath() + "/sensors");
+            if(!sensorsDirectory.exists() && !sensorsDirectory.mkdir()) {
+                LOG.warning("Unable to create sensors directory at: "+getServiceDirectory()+"/sensors");
+            } else {
+                properties.setProperty("1m5.dir.sensors",sensorsDirectory.getCanonicalPath());
+            }
+        } catch (IOException e) {
+            LOG.warning("IOException caught while building sensors directory: \n"+e.getLocalizedMessage());
         }
 
         // Sensor Manager
