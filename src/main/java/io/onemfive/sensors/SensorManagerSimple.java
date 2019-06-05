@@ -126,7 +126,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             sensor = lookupByOperation(r.getOperation());
         }
         // Lookup by URL
-        if(sensor == null && e.getURL() != null && e.getURL() != null){
+        if(sensor == null && e.getURL() != null){
             sensor = lookupByURL(e.getURL());
         }
         return sensor;
