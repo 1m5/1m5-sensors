@@ -12,7 +12,7 @@ import java.util.logging.Logger;
  * MEDIUM: Tor
  * HIGH: I2P
  * VERYHIGH: I2P with High Delays
- * EXTREME: Direct Mesh
+ * EXTREME: Direct Ad-Hoc Network
  * NEO: A combination of all anonymous networks from MEDIUM to EXTREME
  *
  * We are working towards providing the following sensitivity routing logic:
