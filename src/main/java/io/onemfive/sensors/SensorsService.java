@@ -247,9 +247,9 @@ public class SensorsService extends BaseService {
 
         // Directories
         try {
-            sensorsDirectory = new File(getServiceDirectory().getCanonicalPath() + "/sensors");
+            sensorsDirectory = new File(getServiceDirectory(), "sensors");
             if(!sensorsDirectory.exists() && !sensorsDirectory.mkdir()) {
-                LOG.warning("Unable to create sensors directory at: "+getServiceDirectory()+"/sensors");
+                LOG.warning("Unable to create sensors directory at: "+getServiceDirectory().getAbsolutePath()+"/sensors");
             } else {
                 properties.setProperty("1m5.dir.sensors",sensorsDirectory.getCanonicalPath());
             }
