@@ -12,6 +12,7 @@ public abstract class SensorManagerBase implements SensorManager {
     protected final Map<String, Sensor> activeSensors = new HashMap<>();
     protected final Map<String, Sensor> blockedSensors = new HashMap<>();
 
+    protected NetworkPeer localPeer;
     protected Map<String, NetworkPeer> peers = new HashMap<>();
 
     protected SensorsService sensorsService;
@@ -42,8 +43,25 @@ public abstract class SensorManagerBase implements SensorManager {
         return blockedSensors;
     }
 
+    public SensorStatus getSensorStatus(String sensor) {
+        Sensor s = activeSensors.get(sensor);
+        if(s == null) {
+            return SensorStatus.UNREGISTERED;
+        } else {
+            return s.getStatus();
+        }
+    }
+
+    public void setLocalPeer(NetworkPeer localPeer) {
+        this.localPeer = localPeer;
+    }
+
+    public NetworkPeer getLocalPeer() {
+        return localPeer;
+    }
+
     @Override
-    public void updatePeer(NetworkPeer peer) {
+    public void savePeer(NetworkPeer peer) {
         peers.put(peer.getAddress(), peer);
     }
 

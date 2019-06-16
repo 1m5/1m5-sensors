@@ -2,6 +2,8 @@ package io.onemfive.sensors;
 
 import io.onemfive.data.Envelope;
 
+import java.util.logging.Logger;
+
 /**
  * Sensitivity order from least to greatest is defined in Envelope.Sensitivity with default protocols:
  *
@@ -10,7 +12,7 @@ import io.onemfive.data.Envelope;
  * MEDIUM: Tor
  * HIGH: I2P
  * VERYHIGH: I2P with High Delays
- * EXTREME: Direct Mesh
+ * EXTREME: Direct Ad-Hoc Network
  * NEO: A combination of all anonymous networks from MEDIUM to EXTREME
  *
  * We are working towards providing the following sensitivity routing logic:
@@ -62,10 +64,75 @@ import io.onemfive.data.Envelope;
  */
 public class SensorManagerUncensored extends SensorManagerSimple {
 
+    private static Logger LOG = Logger.getLogger(SensorManagerUncensored.class.getName());
+
     @Override
     public Sensor selectSensor(Envelope e) {
-        return super.selectSensor(e);
-//        Sensor s = null;
+        // Lookup sensor by simple means
+        Sensor s = super.selectSensor(e);
+        String err = null;
+        if(s == null) {
+            // Sensor not determined by request - we have a problem
+            err = "Unable to select sensor from request. Please ensure Envelope sensitivity, operation, or url is set to a supported Sensor.";
+        } else {
+            // Sensor determined by request
+            if(blockedSensors.get(s.getClass().getName()) != null
+                    && SensorStatus.NETWORK_CONNECTED.name().equals(s.getStatus().name())) {
+                // Remove from Blocked Sensors List
+                blockedSensors.remove(s.getClass().getName());
+                LOG.info(s.getClass().getSimpleName() + " removed from blocked sensors list.");
+            }
+            switch(s.getStatus()) {
+                case NETWORK_BLOCKED: {
+                    if(TOR_SENSOR_NAME.equals(s.getClass().getName())) {
+                        LOG.info("Tor Sensor blocked.");
+                        // Tor is being blocked, switch to I2P
+                        if(getActiveSensors().get(I2P_SENSOR_NAME) == null) {
+                            if(getActiveSensors().get(IDN_SENSOR_NAME) == null) {
+                                err = "TOR blocked and I2P and 1DN Sensors not active. Please register I2P or 1DN Sensor to ensure TOR can be re-routed through I2P or 1DN when blocked.";
+                            } else {
+                                LOG.info("1DN Sensor is active; switching to 1DN...");
+                                s = getActiveSensors().get(IDN_SENSOR_NAME);
+                            }
+                        } else {
+                            LOG.info("I2P Sensor is active; switching to I2P...");
+                            s = getActiveSensors().get(I2P_SENSOR_NAME);
+                        }
+                    } else if(I2P_SENSOR_NAME.equals(s.getClass().getName())) {
+                        LOG.info("I2P Sensor blocked.");
+                        // I2P is being blocked, switch to 1DN
+                        if(getActiveSensors().get(IDN_SENSOR_NAME) == null) {
+                            err = "I2P blocked and 1DN Sensor is not active. Please register 1DN Sensor to ensure I2P can be re-routed through 1DN when blocked.";
+                        } else {
+                            LOG.info("1DN Sensor is active; switching to 1DN...");
+                            s = getActiveSensors().get(IDN_SENSOR_NAME);
+                        }
+                    } else if(IDN_SENSOR_NAME.equals(s.getClass().getName())) {
+                        LOG.info("1DN Sensor blocked.");
+                        // 1DN is being blocked, switch to I2P if not blocked
+                        if(getActiveSensors().get(I2P_SENSOR_NAME) == null) {
+                            err = "1DN blocked and I2P Sensor is not active. Please register I2P Sensor to ensure 1DN can be re-routed through I2P when blocked.";
+                        } else {
+                            LOG.info("I2P Sensor is active");
+                            s = getActiveSensors().get(I2P_SENSOR_NAME);
+                            if(s.getStatus() == SensorStatus.NETWORK_BLOCKED) {
+                                err = "I2P is also blocked. All currently available options exhausted.";
+                            }
+                        }
+                    }
+                    break;
+                }
+
+            }
+        }
+        if(err != null) {
+            if (e.getMessage() != null) {
+                e.getMessage().addErrorMessage(err);
+            }
+            LOG.warning(err);
+            return null;
+        }
+
 //        if(e.getRoute() != null && e.getURL() != null) {
 //            String p = e.getURL().getPath();
 //            if(p.startsWith("http")) {
@@ -93,6 +160,6 @@ public class SensorManagerUncensored extends SensorManagerSimple {
 //            }
 //        }
 //
-//        return s;
+        return s;
     }
 }
