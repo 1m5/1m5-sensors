@@ -11,6 +11,7 @@ public interface SensorManager {
     String TOR_SENSOR_NAME = "io.onemfive.tor.client.TorClientSensor";
     String I2P_SENSOR_NAME = "io.onemfive.i2p.I2PSensor";
     String IDN_SENSOR_NAME = "io.onemfive.idn.IDNSensor";
+    String RADIO_SENSOR_NAME = "io.onemfive.radio.RadioSensor";
 
     boolean init(Properties properties);
     Sensor selectSensor(Envelope envelope);

@@ -86,10 +86,15 @@ public class SensorManagerUncensored extends SensorManagerSimple {
                 case NETWORK_BLOCKED: {
                     if(TOR_SENSOR_NAME.equals(s.getClass().getName())) {
                         LOG.info("Tor Sensor blocked.");
-                        // Tor is being blocked, switch to I2P
+                        // Tor is being blocked, switch to I2P/1DN/Radio
                         if(getActiveSensors().get(I2P_SENSOR_NAME) == null) {
                             if(getActiveSensors().get(IDN_SENSOR_NAME) == null) {
-                                err = "TOR blocked and I2P and 1DN Sensors not active. Please register I2P or 1DN Sensor to ensure TOR can be re-routed through I2P or 1DN when blocked.";
+                                if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
+                                    err = "TOR blocked and I2P, 1DN, and Radio Sensors not active. Please register I2P, 1DN, or Radio Sensor to ensure TOR can be re-routed through I2P, 1DN, or Radio when blocked.";
+                                } else {
+                                    LOG.info("Radio Sensor is active; switching to Radio...");
+                                    s = getActiveSensors().get(RADIO_SENSOR_NAME);
+                                }
                             } else {
                                 LOG.info("1DN Sensor is active; switching to 1DN...");
                                 s = getActiveSensors().get(IDN_SENSOR_NAME);
@@ -100,23 +105,39 @@ public class SensorManagerUncensored extends SensorManagerSimple {
                         }
                     } else if(I2P_SENSOR_NAME.equals(s.getClass().getName())) {
                         LOG.info("I2P Sensor blocked.");
-                        // I2P is being blocked, switch to 1DN
+                        // I2P is being blocked, switch to 1DN/Radio
                         if(getActiveSensors().get(IDN_SENSOR_NAME) == null) {
-                            err = "I2P blocked and 1DN Sensor is not active. Please register 1DN Sensor to ensure I2P can be re-routed through 1DN when blocked.";
+                            if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
+                                err = "I2P blocked and 1DN nor Radio Sensors are active. Please register 1DN and/or Radio Sensor to ensure I2P can be re-routed through 1DN or Radio when blocked.";
+                            } else {
+                                LOG.info("Radio Sensor is active; switching to Radio...");
+                                s = getActiveSensors().get(RADIO_SENSOR_NAME);
+                            }
                         } else {
                             LOG.info("1DN Sensor is active; switching to 1DN...");
                             s = getActiveSensors().get(IDN_SENSOR_NAME);
                         }
                     } else if(IDN_SENSOR_NAME.equals(s.getClass().getName())) {
                         LOG.info("1DN Sensor blocked.");
-                        // 1DN is being blocked, switch to I2P if not blocked
+                        // 1DN is being blocked, switch to I2P/Radio if not blocked
                         if(getActiveSensors().get(I2P_SENSOR_NAME) == null) {
-                            err = "1DN blocked and I2P Sensor is not active. Please register I2P Sensor to ensure 1DN can be re-routed through I2P when blocked.";
+                            if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
+                                err = "1DN blocked and I2P nor Radio Sensors are active. Please register I2P and/or Radio Sensor to ensure 1DN can be re-routed through I2P or Radio when blocked.";
+                            } else {
+                                LOG.info("Radio Sensor is active; switching to Radio...");
+                                s = getActiveSensors().get(RADIO_SENSOR_NAME);
+                            }
                         } else {
                             LOG.info("I2P Sensor is active");
                             s = getActiveSensors().get(I2P_SENSOR_NAME);
                             if(s.getStatus() == SensorStatus.NETWORK_BLOCKED) {
-                                err = "I2P is also blocked. All currently available options exhausted.";
+                                LOG.info("...yet I2P is also blocked.");
+                                if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
+                                    err = "1DN and I2P are blocked and Radio Sensor is not active. Please register Radio Sensor to ensure 1DN and I2P requests can be re-routed through Radio when blocked.";
+                                } else {
+                                    LOG.info("Radio Sensor is active; switching to Radio...");
+                                    s = getActiveSensors().get(RADIO_SENSOR_NAME);
+                                }
                             }
                         }
                     }
