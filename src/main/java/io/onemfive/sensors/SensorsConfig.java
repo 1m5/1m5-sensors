@@ -16,9 +16,12 @@ public class SensorsConfig {
                 NetworkPeer np;
                 String[] na;
                 for(String s : sl) {
-                    na = s.split("|");
-                    np = new NetworkPeer(na[0]);
-                    np.setAddress(na[1]);
+//                    na = s.split("|");
+//                    np = new NetworkPeer(na[0]);
+//                    np.setAddress(na[1]);
+                    // For now just assume I2P
+                    np = new NetworkPeer(NetworkPeer.Network.I2P.name());
+                    np.setAddress(s);
                     seeds.add(np);
                 }
             }
