@@ -13,6 +13,7 @@ import java.util.Map;
  */
 public abstract class BaseSensor implements Sensor {
 
+    protected NetworkPeer.Network network;
     protected SensorManager sensorManager;
     private SensorStatus sensorStatus = SensorStatus.NOT_INITIALIZED;
     protected Integer restartAttempts = 0;
@@ -22,8 +23,10 @@ public abstract class BaseSensor implements Sensor {
 
     protected void updateStatus(SensorStatus sensorStatus) {
         this.sensorStatus = sensorStatus;
-        if(sensorManager != null) // Might be null during localized testing
+        // Might be null during localized testing
+        if(sensorManager != null) {
             sensorManager.updateSensorStatus(this.getClass().getName(), sensorStatus);
+        }
     }
 
     public BaseSensor() {}
@@ -34,21 +37,29 @@ public abstract class BaseSensor implements Sensor {
         this.priority = priority;
     }
 
+    @Override
+    public void setNetwork(NetworkPeer.Network network) {
+        this.network = network;
+    }
+
+    @Override
+    public NetworkPeer.Network getNetwork() {
+        return network;
+    }
+
+    @Override
     public void setSensorManager(SensorManager sensorManager) {
         this.sensorManager = sensorManager;
     }
 
+    @Override
     public void setSensitivity(Envelope.Sensitivity sensitivity) {
         this.sensitivity = sensitivity;
     }
 
+    @Override
     public void setPriority(Integer priority) {
         this.priority = priority;
-    }
-
-    @Override
-    public Map<String, NetworkPeer> getPeers() {
-        return peers;
     }
 
     @Override
