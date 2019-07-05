@@ -60,4 +60,8 @@ public abstract class SensorManagerBase implements SensorManager {
         sensorsService.sendToBus(envelope);
     }
 
+    @Override
+    public void suspend(Envelope envelope) {
+        sensorsService.suspend(envelope);
+    }
 }
