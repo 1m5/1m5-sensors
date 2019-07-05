@@ -1,6 +1,8 @@
-package io.onemfive.sensors;
+package io.onemfive.sensors.peers;
 
 import io.onemfive.data.JSONSerializable;
+import io.onemfive.sensors.Config;
+import org.neo4j.graphdb.RelationshipType;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,6 +13,13 @@ import java.util.Map;
  * @author objectorange
  */
 public class P2PRelationship implements JSONSerializable {
+
+    public enum RelType implements RelationshipType {
+        Known,
+        Reliable,
+        SuperReliable,
+        Banned
+    }
 
     private Long totalAcks = 0L;
     private Long lastAckTime = 0L;
