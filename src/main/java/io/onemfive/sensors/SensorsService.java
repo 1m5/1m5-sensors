@@ -524,12 +524,7 @@ public class SensorsService extends BaseService {
             }
         }
         if(sensorManager.init(properties) && peerManager.init(properties, seeds)) {
-            Subscription subscription = new Subscription() {
-                @Override
-                public void notifyOfEvent(Envelope envelope) {
-                    routeIn(envelope);
-                }
-            };
+            Subscription subscription = envelope -> routeIn(envelope);
 
             // Subscribe to Text notifications
             SubscriptionRequest r = new SubscriptionRequest(EventMessage.Type.TEXT, subscription);
