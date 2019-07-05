@@ -17,4 +17,5 @@ public interface SensorManager {
     void registerSensor(Sensor sensor);
     void updateSensorStatus(final String sensorID, SensorStatus sensorStatus);
     boolean shutdown();
+    void sendToBus(Envelope envelope);
 }
