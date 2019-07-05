@@ -5,13 +5,13 @@
 
 	<groupId>io.onemfive</groupId>
 	<artifactId>sensors</artifactId>
-	<version>0.6.1</version>
+	<version>0.6.1-SNAPSHOT</version>
 
 	<packaging>jar</packaging>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>1.7</java.version>
+		<java.version>1.8</java.version>
 	</properties>
 
 	<name>1m5-sensors</name>
@@ -36,6 +36,105 @@
 		<url>git@github.com/1m5/1m5-sensors</url>
 	</scm>
 
+	<profiles>
+		<profile>
+			<id>devnet</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<properties>
+				<!-- Seeds in format network|address comma-delimited -->
+				<onemfive.sensors.seeds></onemfive.sensors.seeds>
+				<!-- Banned in format network|address comma-delimited -->
+				<onemfive.sensors.banned></onemfive.sensors.banned>
+				<!-- Min Peers Tracked - the point at which Discovery process goes into 'hyper' mode. -->
+				<onemfive.sensors.MinPT>5</onemfive.sensors.MinPT>
+				<!-- Max Peers Tracked - the total number of Peers to attempt to maintain knowledge of -->
+				<onemfive.sensors.MaxPT>10</onemfive.sensors.MaxPT>
+				<!-- Max Peers Sent - Maximum number of peers to send in a peer list (the bigger a datagram, the less chance of it getting through). -->
+				<onemfive.sensors.MaxPS>5</onemfive.sensors.MaxPS>
+				<!-- Max Acknowledgments Tracked -->
+				<onemfive.sensors.MaxAT>20</onemfive.sensors.MaxAT>
+				<!-- Update Interval - seconds between Discovery process -->
+				<onemfive.sensors.UI>60</onemfive.sensors.UI>
+				<!-- Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckRP>5</onemfive.sensors.MinAckRP>
+				<!-- Super Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckSRP>200</onemfive.sensors.MinAckSRP>
+			</properties>
+		</profile>
+		<profile>
+			<id>testnet</id>
+			<properties>
+				<!-- Seeds in format network|address comma-delimited -->
+				<onemfive.sensors.seeds></onemfive.sensors.seeds>
+				<!-- Banned in format network|address comma-delimited -->
+				<onemfive.sensors.banned></onemfive.sensors.banned>
+				<!-- Min Peers Tracked - the point at which Discovery process goes into 'hyper' mode. -->
+				<onemfive.sensors.MinPT>10</onemfive.sensors.MinPT>
+				<!-- Max Peers Tracked - the total number of Peers to attempt to maintain knowledge of -->
+				<onemfive.sensors.MaxPT>100</onemfive.sensors.MaxPT>
+				<!-- Max Peers Sent - Maximum number of peers to send in a peer list (the bigger a datagram, the less chance of it getting through). -->
+				<onemfive.sensors.MaxPS>5</onemfive.sensors.MaxPS>
+				<!-- Max Acknowledgments Tracked -->
+				<onemfive.sensors.MaxAT>50</onemfive.sensors.MaxAT>
+				<!-- Update Interval - seconds between Discovery process -->
+				<onemfive.sensors.UI>60</onemfive.sensors.UI>
+				<!-- Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckRP>20</onemfive.sensors.MinAckRP>
+				<!-- Super Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckSRP>10000</onemfive.sensors.MinAckSRP>
+			</properties>
+		</profile>
+		<profile>
+			<id>mainnet</id>
+			<properties>
+				<!-- Seeds in format network|address comma-delimited -->
+				<onemfive.sensors.seeds></onemfive.sensors.seeds>
+				<!-- Banned in format network|address comma-delimited -->
+				<onemfive.sensors.banned></onemfive.sensors.banned>
+				<!-- Min Peers Tracked - the point at which Discovery process goes into 'hyper' mode. -->
+				<onemfive.sensors.MinPT>10</onemfive.sensors.MinPT>
+				<!-- Max Peers Tracked - the total number of Peers to attempt to maintain knowledge of -->
+				<onemfive.sensors.MaxPT>100</onemfive.sensors.MaxPT>
+				<!-- Max Peers Sent - Maximum number of peers to send in a peer list (the bigger a datagram, the less chance of it getting through). -->
+				<onemfive.sensors.MaxPS>5</onemfive.sensors.MaxPS>
+				<!-- Max Acknowledgments Tracked -->
+				<onemfive.sensors.MaxAT>50</onemfive.sensors.MaxAT>
+				<!-- Update Interval - seconds between Discovery process -->
+				<onemfive.sensors.UI>60</onemfive.sensors.UI>
+				<!-- Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckRP>20</onemfive.sensors.MinAckRP>
+				<!-- Super Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckSRP>10000</onemfive.sensors.MinAckSRP>
+			</properties>
+		</profile>
+		<profile>
+			<id>seed</id>
+			<!-- Seed peers are set up to get newcomers onto the network quickly.-->
+			<properties>
+				<!-- Seeds in format network|address comma-delimited -->
+				<onemfive.sensors.seeds></onemfive.sensors.seeds>
+				<!-- Banned in format network|address comma-delimited -->
+				<onemfive.sensors.banned></onemfive.sensors.banned>
+				<!-- Min Peers Tracked - the point at which Discovery process goes into 'hyper' mode. -->
+				<onemfive.sensors.MinPT>10</onemfive.sensors.MinPT>
+				<!-- Max Peers Tracked - the total number of Peers to attempt to maintain knowledge of -->
+				<onemfive.sensors.MaxPT>10000</onemfive.sensors.MaxPT>
+				<!-- Max Peers Sent - Maximum number of peers to send in a peer list (the bigger a datagram, the less chance of it getting through). -->
+				<onemfive.sensors.MaxPS>5</onemfive.sensors.MaxPS>
+				<!-- Max Acknowledgments Tracked -->
+				<onemfive.sensors.MaxAT>100</onemfive.sensors.MaxAT>
+				<!-- Update Interval - seconds between Discovery process -->
+				<onemfive.sensors.UI>60</onemfive.sensors.UI>
+				<!-- Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckRP>100</onemfive.sensors.MinAckRP>
+				<!-- Super Reliable Peer Min Acks -->
+				<onemfive.sensors.MinAckSRP>100000</onemfive.sensors.MinAckSRP>
+			</properties>
+		</profile>
+	</profiles>
+
 	<repositories>
 		<repository>
 			<id>jitpack.io</id>
@@ -47,6 +146,16 @@
 		<dependency>
 			<groupId>io.onemfive</groupId>
 			<artifactId>core</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.onemfive</groupId>
+			<artifactId>did</artifactId>
+			<version>${project.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>io.onemfive</groupId>
+			<artifactId>neo4j</artifactId>
 			<version>${project.version}</version>
 		</dependency>
 		<!-- Test -->
@@ -66,12 +175,7 @@
 				<directory>src/main/resources</directory>
 				<filtering>true</filtering>
 				<includes>
-					<include>**/*.xml</include>
-					<include>**/*.yml</include>
-					<include>**/*.properties</include>
 					<include>**/*.config</include>
-					<include>**/*.txt</include>
-					<include>**/*.crt</include>
 				</includes>
 			</resource>
 		</resources>
