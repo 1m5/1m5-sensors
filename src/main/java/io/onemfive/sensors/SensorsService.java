@@ -2,14 +2,10 @@ package io.onemfive.sensors;
 
 import io.onemfive.core.*;
 import io.onemfive.core.keyring.AuthNRequest;
-import io.onemfive.core.keyring.DecryptRequest;
-import io.onemfive.core.keyring.DecryptSymmetricRequest;
 import io.onemfive.core.keyring.KeyRingService;
 import io.onemfive.core.notification.NotificationService;
 import io.onemfive.core.notification.SubscriptionRequest;
-import io.onemfive.core.util.AppThread;
 import io.onemfive.data.*;
-import io.onemfive.data.content.Content;
 import io.onemfive.data.util.DLC;
 import io.onemfive.data.util.FileUtil;
 import io.onemfive.data.util.HashUtil;
@@ -27,7 +23,7 @@ import java.io.IOException;
 import java.util.*;
 import java.util.logging.Logger;
 
-import static io.onemfive.sensors.Config.seeds;
+import static io.onemfive.sensors.SensorsConfig.seeds;
 
 /**
  * This is the main entry point into the application by supported networks.
@@ -477,7 +473,7 @@ public class SensorsService extends BaseService {
             LOG.warning("IOException caught while building sensors directory: \n"+e.getLocalizedMessage());
         }
 
-        Config.update(properties);
+        SensorsConfig.update(properties);
 
         // Sensor Manager
         try {

@@ -2,7 +2,7 @@ package io.onemfive.sensors.peers;
 
 import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.NetworkPeer;
-import io.onemfive.sensors.Config;
+import io.onemfive.sensors.SensorsConfig;
 import io.onemfive.sensors.SensorTask;
 import io.onemfive.sensors.SensorsService;
 
@@ -41,7 +41,7 @@ public  class PeerDiscovery extends SensorTask {
             return 5 * 60 * 1000L;
         }
         else
-            return Config.UI * 1000L; // wait for UI seconds
+            return SensorsConfig.UI * 1000L; // wait for UI seconds
     }
 
     @Override
@@ -66,8 +66,8 @@ public  class PeerDiscovery extends SensorTask {
                 LOG.warning("No seeds available! Please provide at least one seed!");
                 return false;
             }
-        } else if(totalKnown < Config.MaxPT) {
-            LOG.info(totalKnown+" known peers less than Maximum Peers Tracked of "+Config.MaxPT+"; continuing peer discovery...");
+        } else if(totalKnown < SensorsConfig.MaxPT) {
+            LOG.info(totalKnown+" known peers less than Maximum Peers Tracked of "+ SensorsConfig.MaxPT+"; continuing peer discovery...");
             NetworkPeer p = service.getPeerManager().getRandomPeer(localPeer);
             if(p != null) {
                 LOG.info("Sending Peer Status Request to Known Peer...");
@@ -75,7 +75,7 @@ public  class PeerDiscovery extends SensorTask {
                 LOG.info("Sent Peer Status Request to Known Peer.");
             }
         } else {
-            LOG.info("Maximum Peers Tracked of "+Config.MaxPT+" reached. No need to look for more.");
+            LOG.info("Maximum Peers Tracked of "+ SensorsConfig.MaxPT+" reached. No need to look for more.");
         }
         firstRun = false;
         return true;

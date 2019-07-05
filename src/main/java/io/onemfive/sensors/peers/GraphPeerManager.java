@@ -3,10 +3,7 @@ package io.onemfive.sensors.peers;
 import io.onemfive.data.NetworkPeer;
 import io.onemfive.neo4j.GraphUtil;
 import io.onemfive.neo4j.Neo4jDB;
-import io.onemfive.sensors.Config;
-import org.neo4j.graphalgo.GraphAlgoFactory;
-import org.neo4j.graphalgo.PathFinder;
-import org.neo4j.graphalgo.WeightedPath;
+import io.onemfive.sensors.SensorsConfig;
 import org.neo4j.graphdb.*;
 
 import java.util.*;
@@ -77,7 +74,7 @@ public class GraphPeerManager extends BasePeerManager {
         else if(autocreate) {
             LOG.info("Creating NetworkPeer in graph...");
             long numberPeers = totalPeers(getLocalPeer());
-            if(numberPeers <= Config.MaxPT) {
+            if(numberPeers <= SensorsConfig.MaxPT) {
                 try (Transaction tx = db.getGraphDb().beginTx()) {
                     Node n = db.getGraphDb().createNode(PEER_LABEL);
                     toNode(p,n);
@@ -87,7 +84,7 @@ public class GraphPeerManager extends BasePeerManager {
                     LOG.warning(e.getLocalizedMessage());
                 }
             } else {
-                LOG.info("Not adding peer; max number of peers reached: "+Config.MaxPT);
+                LOG.info("Not adding peer; max number of peers reached: "+ SensorsConfig.MaxPT);
             }
         }
         if(isLocalReady()
@@ -389,7 +386,7 @@ public class GraphPeerManager extends BasePeerManager {
             long numberKnown = totalPeers(getLocalPeer());
             NetworkPeer remoteRelP;
             for (NetworkPeer known : remoteKnown) {
-                if (numberKnown + saved > Config.MaxPT)
+                if (numberKnown + saved > SensorsConfig.MaxPT)
                     break;
                 LOG.info("Saving Remote Known...");
                 savePeer(known, true);
@@ -397,8 +394,8 @@ public class GraphPeerManager extends BasePeerManager {
                 LOG.info("Remote Peer saved and related as Known to local peer.");
                 relatePeers(remotePeer, known, P2PRelationship.RelType.Known);
                 LOG.info("Remote Known Peer related as Known to Remote Peer.");
-                if (++saved >= Config.MaxPS) {
-                    LOG.info("No longer taking reliables from this peer. Max reliables to receive reached: " + Config.MaxPS);
+                if (++saved >= SensorsConfig.MaxPS) {
+                    LOG.info("No longer taking reliables from this peer. Max reliables to receive reached: " + SensorsConfig.MaxPS);
                     break; // Ensure we do not update beyond the max sent to help fight a form of DDOS
                 }
             }
@@ -411,7 +408,7 @@ public class GraphPeerManager extends BasePeerManager {
         try (Transaction tx = db.getGraphDb().beginTx()) {
             String cql = "MATCH (n {address: '"+p.getAddress()+"'})-[:" + P2PRelationship.RelType.Known.name() + "]->(x)" +
                     " RETURN x" +
-                    " LIMIT "+Config.MaxPS+";";
+                    " LIMIT "+ SensorsConfig.MaxPS+";";
             Result result = db.getGraphDb().execute(cql);
             while (result.hasNext()) {
                 peers.add(toPeer((Node)result.next().get("x")));
@@ -497,11 +494,11 @@ public class GraphPeerManager extends BasePeerManager {
             isReliable = hasRelationship(startPeer, endPeer, P2PRelationship.RelType.Reliable);
             if(isReliable) {
                 isSuperReliable = hasRelationship(startPeer, endPeer, P2PRelationship.RelType.SuperReliable);
-                if(!isSuperReliable && knownRel.getTotalAcks() >= Config.MinAckSRP) {
+                if(!isSuperReliable && knownRel.getTotalAcks() >= SensorsConfig.MinAckSRP) {
                     relatePeers(startPeer, endPeer, P2PRelationship.RelType.SuperReliable);
                     LOG.info("Now super reliable peer: "+endPeer);
                 }
-            } else if(knownRel.getTotalAcks() >= Config.MinAckRP) {
+            } else if(knownRel.getTotalAcks() >= SensorsConfig.MinAckRP) {
                 // Reliable relationship
                 relatePeers(startPeer, endPeer, P2PRelationship.RelType.Reliable);
                 addedAsReliable = true;
@@ -516,11 +513,11 @@ public class GraphPeerManager extends BasePeerManager {
                     "\ttotal acks: "+totalAcks+"\n"+
                     "\tavg round trip latency: "+avgAckLatency+"ms\n} of remote peer "+endPeer+" with start peer "+startPeer);
 
-        } else if(totalPeers(startPeer) <= Config.MaxPT) {
+        } else if(totalPeers(startPeer) <= SensorsConfig.MaxPT) {
             relatePeers(startPeer, endPeer, P2PRelationship.RelType.Known);
             LOG.info("New known peer: "+endPeer);
         } else {
-            LOG.info("Max peers tracked: "+Config.MaxPT);
+            LOG.info("Max peers tracked: "+ SensorsConfig.MaxPT);
         }
         return addedAsReliable;
     }

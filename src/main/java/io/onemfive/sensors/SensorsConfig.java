@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-public class Config {
+public class SensorsConfig {
 
     public static void update(Properties properties) {
         if(properties.getProperty("onemfive.sensors.seeds") != null) {
