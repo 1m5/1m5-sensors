@@ -438,12 +438,12 @@ public class SensorsService extends BaseService {
     }
 
     @Override
-    public boolean start(Properties properties) {
-        super.start(properties);
+    public boolean start(Properties p) {
+        super.start(p);
         LOG.info("Starting...");
         updateStatus(ServiceStatus.STARTING);
         try {
-            this.properties = Config.loadFromClasspath("sensors.config", properties, false);
+            properties = Config.loadFromClasspath("sensors.config", p, false);
         } catch (Exception e) {
             LOG.warning(e.getLocalizedMessage());
         }
