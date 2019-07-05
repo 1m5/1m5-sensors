@@ -442,7 +442,11 @@ public class SensorsService extends BaseService {
         super.start(properties);
         LOG.info("Starting...");
         updateStatus(ServiceStatus.STARTING);
-        this.properties = properties;
+        try {
+            this.properties = Config.loadFromClasspath("sensors.config", properties, false);
+        } catch (Exception e) {
+            LOG.warning(e.getLocalizedMessage());
+        }
 
         // Parameters
         String sensorManagerClass = properties.getProperty(SensorManager.class.getName());
