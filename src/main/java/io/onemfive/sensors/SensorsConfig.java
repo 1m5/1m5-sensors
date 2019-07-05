@@ -11,7 +11,7 @@ public class SensorsConfig {
     public static void update(Properties properties) {
         if(properties.getProperty("onemfive.sensors.seeds") != null) {
             String i2pSeedsStr = properties.getProperty("onemfive.sensors.seeds");
-            if(i2pSeedsStr!=null) {
+            if(i2pSeedsStr!=null && !"".equals(i2pSeedsStr)) {
                 String[] sl = i2pSeedsStr.split(",");
                 NetworkPeer np;
                 String[] na;
@@ -28,7 +28,7 @@ public class SensorsConfig {
         }
         if(properties.getProperty("onemfive.sensors.banned") != null) {
             String i2pBannedStr = properties.getProperty("onemfive.sensors.banned");
-            if(i2pBannedStr!=null) {
+            if(i2pBannedStr!=null && !"".equals(i2pBannedStr)) {
                 String[] bl = i2pBannedStr.split(",");
                 NetworkPeer np;
                 String[] na;
