@@ -1,11 +1,9 @@
 package io.onemfive.sensors;
 
 import io.onemfive.core.LifeCycle;
+import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
-import io.onemfive.sensors.peers.PeerManager;
-
-import java.util.Map;
 
 /**
  * Expected behavior from a Sensor.
@@ -13,6 +11,7 @@ import java.util.Map;
  * @author objectorange
  */
 public interface Sensor extends LifeCycle {
+    void setTaskRunner(TaskRunner taskRunner);
     boolean send(Envelope envelope);
     boolean reply(Envelope envelope);
     void setNetwork(NetworkPeer.Network network);

@@ -1,5 +1,6 @@
 package io.onemfive.sensors;
 
+import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
@@ -20,6 +21,7 @@ public abstract class BaseSensor implements Sensor {
     private Envelope.Sensitivity sensitivity;
     private Integer priority;
     protected Map<String,NetworkPeer> peers = new HashMap<>();
+    protected TaskRunner taskRunner;
 
     protected void updateStatus(SensorStatus sensorStatus) {
         this.sensorStatus = sensorStatus;
@@ -35,6 +37,10 @@ public abstract class BaseSensor implements Sensor {
         this.sensorManager = sensorManager;
         this.sensitivity = sensitivity;
         this.priority = priority;
+    }
+
+    public void setTaskRunner(TaskRunner taskRunner) {
+        this.taskRunner = taskRunner;
     }
 
     @Override
