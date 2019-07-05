@@ -185,7 +185,6 @@ public class SensorManagerSimple extends SensorManagerBase {
         return highest;
     }
 
-    @Override
     public void sensorError(final String sensorID) {
         // Sensor has Error, restart it if number of restarts is not greater than 3
         if(activeSensors.get(sensorID) != null) {
