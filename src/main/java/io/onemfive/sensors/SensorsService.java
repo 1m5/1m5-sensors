@@ -77,7 +77,45 @@ public class SensorsService extends BaseService {
             switch (r.getOperation()) {
                 case OPERATION_SEND : {
                     LOG.info("Sending Envelope to selected Sensor...");
-                    sensor.send(e);
+                    if(!sensor.send(e)) {
+                        Message m = e.getMessage();
+                        boolean redirected = false;
+                        if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
+                            for(String err : m.getErrorMessages()) {
+                                LOG.warning(err);
+                                switch(err) {
+                                    case "408": {
+                                        // Request timed out - let's forward it to another 1M5 peer with I2P
+                                        if(sensor.getClass().getName().equals(SensorManager.TOR_SENSOR_NAME) ||
+                                            sensor.getClass().getName().equals(SensorManager.HTTP_SENSOR_NAME)) {
+                                            if(sensorManager.isActive(SensorManager.I2P_SENSOR_NAME)) {
+                                                Sensor i2p = sensorManager.getRegisteredSensor(SensorManager.I2P_SENSOR_NAME);
+                                                m.clearErrorMessages();
+                                                i2p.send(e);
+                                                redirected = true;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                    case "451": {
+                                        // Unavailable for Legal Reasons - let's forward it to another 1M5 peer with I2P
+                                        if(sensor.getClass().getName().equals(SensorManager.TOR_SENSOR_NAME) ||
+                                                sensor.getClass().getName().equals(SensorManager.HTTP_SENSOR_NAME)) {
+                                            if(sensorManager.isActive(SensorManager.I2P_SENSOR_NAME)) {
+                                                Sensor i2p = sensorManager.getRegisteredSensor(SensorManager.I2P_SENSOR_NAME);
+                                                m.clearErrorMessages();
+                                                i2p.send(e);
+                                                redirected = true;
+                                            }
+                                        }
+                                        break;
+                                    }
+                                }
+                                if(redirected)
+                                    break;
+                            }
+                        }
+                    }
                     break;
                 }
                 case OPERATION_REPLY : {

@@ -47,6 +47,14 @@ public abstract class SensorManagerBase implements SensorManager {
         }
     }
 
+    public Sensor getRegisteredSensor(String sensorName) {
+        return registeredSensors.get(sensorName);
+    }
+
+    public boolean isActive(String sensorName) {
+        return activeSensors.containsKey(sensorName);
+    }
+
     public void setLocalPeer(NetworkPeer localPeer) {
         this.localPeer = localPeer;
     }
