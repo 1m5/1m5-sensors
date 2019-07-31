@@ -12,9 +12,6 @@ public enum SensorStatus {
     INITIALIZING, // 2 - Initializing Sensor's environment including configuration of Networking component
     STARTING, // 3 - Starting of Networking component
     WAITING,  // Optional 3.1 - means this sensor is waiting on a dependent sensor's status to change to STARTING, e.g. Bote waiting on I2P to begin starting up.
-    // Resource
-    RESOURCE_TIMEOUT, // Timeout accessing resource
-    RESOURCE_BLOCKED, // Believed to be an intentional block
     // Sensor Networking
     NETWORK_WARMUP, // Optional 3.2 - means this sensor is waiting for a dependent sensor's status to change to NETWORK_CONNECTED, e.g. Bote waiting on I2P to actually connect.
     NETWORK_PORT_CONFLICT, // Optional 3.3 - means this sensor was unable to open the supplied port - likely being blocked; recommend changing ports
