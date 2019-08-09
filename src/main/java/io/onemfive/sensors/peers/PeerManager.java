@@ -2,6 +2,7 @@ package io.onemfive.sensors.peers;
 
 import io.onemfive.core.keyring.AuthNRequest;
 import io.onemfive.data.DID;
+import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
 import java.util.List;
@@ -12,6 +13,7 @@ public interface PeerManager extends Runnable {
     void updateLocalPeer(AuthNRequest request);
     void updateLocalPeer(DID did);
     NetworkPeer getLocalPeer();
+    Boolean verifyPeer(NetworkPeer peer);
     Boolean savePeer(NetworkPeer peer, Boolean autocreate);
     List<NetworkPeer> getAllPeers(NetworkPeer fromPeer, int pageSize, int beginIndex);
     Long totalPeers(NetworkPeer fromPeer);

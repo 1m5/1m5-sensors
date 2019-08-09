@@ -121,6 +121,14 @@ public class GraphPeerManager extends BasePeerManager {
     }
 
     @Override
+    public Boolean verifyPeer(NetworkPeer peer) {
+        if(findPeerByNetworkedAddress(peer.getNetwork(), peer.getAddress())==null) {
+            return savePeer(peer, true);
+        }
+        return true;
+    }
+
+    @Override
     public List<NetworkPeer> getAllPeers(NetworkPeer fromPeer, int pageSize, int beginIndex) {
         LOG.info("Get All Peers...");
         List<NetworkPeer> peers = new ArrayList<>();
@@ -222,13 +230,14 @@ public class GraphPeerManager extends BasePeerManager {
         return p;
     }
 
-    public NetworkPeer findPeerByNetworkAddress(String address, NetworkPeer.Network network) {
+    public NetworkPeer findPeerByNetworkedAddress(String network, String address) {
         NetworkPeer p = null;
-
-        if(address!=null) {
+        if(address!=null && network!=null) {
             try (Transaction tx = db.getGraphDb().beginTx()) {
-                Node n = db.getGraphDb().findNode(PEER_LABEL, network.name()+"address", address);
-                p = toPeer(n);
+                Node n = db.getGraphDb().findNode(PEER_LABEL, network.toLowerCase()+"Address", address);
+                if(n!=null) {
+                    p = toPeer(n);
+                }
                 tx.success();
             } catch (Exception e) {
                 LOG.warning(e.getLocalizedMessage());
