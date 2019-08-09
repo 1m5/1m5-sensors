@@ -255,7 +255,7 @@ public class GraphPeerManager extends BasePeerManager {
             }
             for (NetworkPeer.Network network : NetworkPeer.Network.values()) {
                 try (Transaction tx = db.getGraphDb().beginTx()) {
-                    Node n = db.getGraphDb().findNode(PEER_LABEL, network.name() + "address", address);
+                    Node n = db.getGraphDb().findNode(PEER_LABEL, network.name() + "Address", address);
                     if(n!=null) {
                         p = toPeer(n);
                     }
