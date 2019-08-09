@@ -86,18 +86,18 @@ public class SensorManagerUncensored extends SensorManagerSimple {
                 case NETWORK_BLOCKED: {
                     if(TOR_SENSOR_NAME.equals(s.getClass().getName())) {
                         LOG.info("Tor Sensor blocked.");
-                        // Tor is being blocked, switch to I2P/1DN/Radio
+                        // Tor is being blocked, switch to I2P/Radio/LiFi
                         if(getActiveSensors().get(I2P_SENSOR_NAME) == null) {
-                            if(getActiveSensors().get(IDN_SENSOR_NAME) == null) {
-                                if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
-                                    err = "TOR blocked and I2P, 1DN, and Radio Sensors not active. Please register I2P, 1DN, or Radio Sensor to ensure TOR can be re-routed through I2P, 1DN, or Radio when blocked.";
+                            if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
+                                if(getActiveSensors().get(LIFI_SENSOR_NAME) == null) {
+                                    err = "TOR blocked and I2P, Radio, and LiFi Sensors not active. Please register I2P, Radio, and/or LiFi Sensor to ensure TOR can be re-routed through I2P, Radio, or LiFi when blocked.";
                                 } else {
-                                    LOG.info("Radio Sensor is active; switching to Radio...");
-                                    s = getActiveSensors().get(RADIO_SENSOR_NAME);
+                                    LOG.info("LiFi Sensor is active; switching to LiFi...");
+                                    s = getActiveSensors().get(LIFI_SENSOR_NAME);
                                 }
                             } else {
-                                LOG.info("1DN Sensor is active; switching to 1DN...");
-                                s = getActiveSensors().get(IDN_SENSOR_NAME);
+                                LOG.info("Radio Sensor is active; switching to Radio...");
+                                s = getActiveSensors().get(RADIO_SENSOR_NAME);
                             }
                         } else {
                             LOG.info("I2P Sensor is active; switching to I2P...");
@@ -105,40 +105,26 @@ public class SensorManagerUncensored extends SensorManagerSimple {
                         }
                     } else if(I2P_SENSOR_NAME.equals(s.getClass().getName())) {
                         LOG.info("I2P Sensor blocked.");
-                        // I2P is being blocked, switch to 1DN/Radio
-                        if(getActiveSensors().get(IDN_SENSOR_NAME) == null) {
-                            if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
-                                err = "I2P blocked and 1DN nor Radio Sensors are active. Please register 1DN and/or Radio Sensor to ensure I2P can be re-routed through 1DN or Radio when blocked.";
+                        // I2P is being blocked, switch to Radio/LiFi
+                        if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
+                            if(getActiveSensors().get(LIFI_SENSOR_NAME) == null) {
+                                err = "I2P blocked and Radio nor LiFi Sensors are active. Please register Radio and/or LiFi Sensor to ensure I2P can be re-routed through Radio or LiFI when blocked.";
                             } else {
-                                LOG.info("Radio Sensor is active; switching to Radio...");
-                                s = getActiveSensors().get(RADIO_SENSOR_NAME);
+                                LOG.info("LiFi Sensor is active; switching to LiFi...");
+                                s = getActiveSensors().get(LIFI_SENSOR_NAME);
                             }
                         } else {
-                            LOG.info("1DN Sensor is active; switching to 1DN...");
-                            s = getActiveSensors().get(IDN_SENSOR_NAME);
+                            LOG.info("Radio Sensor is active; switching to Radio...");
+                            s = getActiveSensors().get(RADIO_SENSOR_NAME);
                         }
-                    } else if(IDN_SENSOR_NAME.equals(s.getClass().getName())) {
-                        LOG.info("1DN Sensor blocked.");
-                        // 1DN is being blocked, switch to I2P/Radio if not blocked
-                        if(getActiveSensors().get(I2P_SENSOR_NAME) == null) {
-                            if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
-                                err = "1DN blocked and I2P nor Radio Sensors are active. Please register I2P and/or Radio Sensor to ensure 1DN can be re-routed through I2P or Radio when blocked.";
-                            } else {
-                                LOG.info("Radio Sensor is active; switching to Radio...");
-                                s = getActiveSensors().get(RADIO_SENSOR_NAME);
-                            }
+                    } else if(RADIO_SENSOR_NAME.equals(s.getClass().getName())) {
+                        LOG.info("Radio Sensor blocked.");
+                        // Radio is being blocked, switch to LiFi
+                        if(getActiveSensors().get(LIFI_SENSOR_NAME) == null) {
+                            err = "Radio blocked and LiFi Sensor not active. Please register LiFi Sensor to ensure Radio can be re-routed through LiFi when blocked.";
                         } else {
-                            LOG.info("I2P Sensor is active");
-                            s = getActiveSensors().get(I2P_SENSOR_NAME);
-                            if(s.getStatus() == SensorStatus.NETWORK_BLOCKED) {
-                                LOG.info("...yet I2P is also blocked.");
-                                if(getActiveSensors().get(RADIO_SENSOR_NAME) == null) {
-                                    err = "1DN and I2P are blocked and Radio Sensor is not active. Please register Radio Sensor to ensure 1DN and I2P requests can be re-routed through Radio when blocked.";
-                                } else {
-                                    LOG.info("Radio Sensor is active; switching to Radio...");
-                                    s = getActiveSensors().get(RADIO_SENSOR_NAME);
-                                }
-                            }
+                            LOG.info("LiFi Sensor is active");
+                            s = getActiveSensors().get(LIFI_SENSOR_NAME);
                         }
                     }
                     break;

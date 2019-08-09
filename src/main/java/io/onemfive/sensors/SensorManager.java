@@ -9,7 +9,6 @@ public interface SensorManager {
     String HTTP_SENSOR_NAME = "io.onemfive.clearnet.client.ClearnetClientSensor";
     String TOR_SENSOR_NAME = "io.onemfive.tor.client.TorClientSensor";
     String I2P_SENSOR_NAME = "io.onemfive.i2p.I2PSensor";
-    String IDN_SENSOR_NAME = "io.onemfive.idn.IDNSensor";
     String RADIO_SENSOR_NAME = "io.onemfive.radio.RadioSensor";
     String LIFI_SENSOR_NAME ="io.onemfive.lifi.LiFiSensor";
 
