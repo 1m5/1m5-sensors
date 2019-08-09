@@ -16,6 +16,7 @@ public interface SensorManager {
     boolean isActive(String sensorName);
     Sensor selectSensor(Envelope envelope);
     void registerSensor(Sensor sensor);
+    Sensor getEscalatedUnblockedSensor(String startingSensor);
     void updateSensorStatus(final String sensorID, SensorStatus sensorStatus);
     Sensor getRegisteredSensor(String sensorName);
     boolean shutdown();

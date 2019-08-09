@@ -79,40 +79,35 @@ public class SensorsService extends BaseService {
                     LOG.info("Sending Envelope to selected Sensor...");
                     if(!sensor.send(e)) {
                         Message m = e.getMessage();
-                        boolean redirected = false;
+                        boolean reroute = false;
                         if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
                             for(String err : m.getErrorMessages()) {
                                 LOG.warning(err);
                                 switch(err) {
                                     case "408": {
-                                        // Request timed out - let's forward it to another 1M5 peer with I2P
-                                        if(sensor.getClass().getName().equals(SensorManager.TOR_SENSOR_NAME) ||
-                                            sensor.getClass().getName().equals(SensorManager.HTTP_SENSOR_NAME)) {
-                                            if(sensorManager.isActive(SensorManager.I2P_SENSOR_NAME)) {
-                                                Sensor i2p = sensorManager.getRegisteredSensor(SensorManager.I2P_SENSOR_NAME);
-                                                m.clearErrorMessages();
-                                                i2p.send(e);
-                                                redirected = true;
-                                            }
-                                        }
+                                        LOG.warning("408 received in response.");
+                                        // Request timed out - let's forward it to another 1M5 peer using escalating sensors
+                                        reroute = true;
                                         break;
                                     }
                                     case "451": {
+                                        LOG.warning("451 received in response.");
                                         // Unavailable for Legal Reasons - let's forward it to another 1M5 peer with I2P
-                                        if(sensor.getClass().getName().equals(SensorManager.TOR_SENSOR_NAME) ||
-                                                sensor.getClass().getName().equals(SensorManager.HTTP_SENSOR_NAME)) {
-                                            if(sensorManager.isActive(SensorManager.I2P_SENSOR_NAME)) {
-                                                Sensor i2p = sensorManager.getRegisteredSensor(SensorManager.I2P_SENSOR_NAME);
-                                                m.clearErrorMessages();
-                                                i2p.send(e);
-                                                redirected = true;
-                                            }
-                                        }
+                                        reroute = true;
                                         break;
                                     }
                                 }
-                                if(redirected)
-                                    break;
+                            }
+                            if(reroute) {
+                                LOG.warning("Can we reroute?");
+                                sensor = sensorManager.getEscalatedUnblockedSensor(sensor.getClass().getName());
+                                if(sensor!=null) {
+                                    LOG.warning("Rerouting through sensor: "+sensor.getClass().getName());
+                                    m.clearErrorMessages();
+                                    sensor.send(e);
+                                } else {
+                                    LOG.warning("Rerouting desired but no Sensor available for rerouting.");
+                                }
                             }
                         }
                     }
