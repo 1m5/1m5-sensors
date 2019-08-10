@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Properties;
 
 public interface PeerManager extends Runnable {
-    Boolean init(Properties properties, List<NetworkPeer> seeds);
+    Boolean init(Properties properties);
     void updateLocalPeer(AuthNRequest request);
     void updateLocalPeer(DID did);
     NetworkPeer getLocalPeer();

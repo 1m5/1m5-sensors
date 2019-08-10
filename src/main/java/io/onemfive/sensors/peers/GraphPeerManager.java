@@ -1,11 +1,17 @@
 package io.onemfive.sensors.peers;
 
+import io.onemfive.core.util.FileUtil;
 import io.onemfive.data.NetworkPeer;
 import io.onemfive.neo4j.GraphUtil;
 import io.onemfive.neo4j.Neo4jDB;
 import io.onemfive.sensors.SensorsConfig;
+import org.neo4j.graphalgo.GraphAlgoFactory;
+import org.neo4j.graphalgo.PathFinder;
+import org.neo4j.graphalgo.WeightedPath;
 import org.neo4j.graphdb.*;
+import org.neo4j.graphdb.schema.IndexDefinition;
 
+import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.ThreadPoolExecutor;
@@ -31,9 +37,59 @@ public class GraphPeerManager extends BasePeerManager {
         super(fixedExecutor, scheduledExecutor);
     }
 
-    //    public Node[] findShortestPath(NetworkPeer fromPeer, NetworkPeer toPeer) {
+    public Boolean init(Properties properties) {
+        if(!super.init(properties)) {
+            LOG.warning("Problem starting SensorManagerBase...exiting...");
+            return false;
+        }
+        db = new Neo4jDB();
+        String baseDir = null;
+        try {
+            baseDir = service.getServiceDirectory().getCanonicalPath();
+        } catch (IOException e) {
+            LOG.warning("IOException caught retrieving SensorsService's service directory.");
+            return false;
+        }
+        properties.setProperty("1m5.neo4j.db.location", baseDir + "/" + DBNAME);
+        String cleanDB = properties.getProperty("onemfive.sensors.db.cleanOnRestart");
+        if (Boolean.parseBoolean(cleanDB)) {
+            FileUtil.rmdir(baseDir + "/" + DBNAME, false);
+            LOG.info("Cleaned " + DBNAME);
+        }
+        db.init(properties);
+
+        // Initialize indexes
+        LOG.info("Verifying Content Indexes are present...");
+        try (Transaction tx = db.getGraphDb().beginTx()) {
+            Iterable<IndexDefinition> definitions = db.getGraphDb().schema().getIndexes(PEER_LABEL);
+            if(definitions==null || ((List)definitions).size() == 0) {
+                // No Address Indexes...set them up
+                db.getGraphDb().schema().indexFor(PEER_LABEL).withName("NetworkPeer.address").on("address").create();
+                LOG.info("NetworkPeer.address Index created.");
+                db.getGraphDb().execute("CALL db.index.fulltext.createNodeIndex('NetworkPeer.address',['"+PEER_LABEL.name()+"'],['address']);");
+                LOG.info("NetworkPeer.address Full Text Index created.");
+            }
+            tx.success();
+        } catch (Exception e) {
+            LOG.warning(e.getLocalizedMessage());
+        }
+
+        LOG.info("Relationship configurations:" +
+                "\n\tonemfive.sensors.MinPT="+SensorsConfig.MinPT+": Min Peers Tracked - the point at which Discovery process goes into 'hyper' mode." +
+                "\n\tonemfive.sensors.MaxPT="+SensorsConfig.MaxPT+": Max Peers Tracked - the total number of Peers to attempt to maintain knowledge of." +
+                "\n\tonemfive.sensors.MaxPS="+SensorsConfig.MaxPS+": Max Peers Sent - Maximum number of peers to send in a peer list (the bigger a datagram, the less chance of it getting through)." +
+                "\n\tonemfive.sensors.MaxAT="+SensorsConfig.MaxAT+": Max Acknowledgments Tracked" +
+                "\n\tonemfive.sensors.UI="+SensorsConfig.UI+": Update Interval - the minutes between Discovery process" +
+                "\n\tonemfive.sensors.MinAckRP="+SensorsConfig.MinAckRP+": Reliable Peer Min Acks" +
+                "\n\tonemfive.sensors.MinAckSRP="+SensorsConfig.MinAckSRP+": Super Reliable Peer Min Acks");
+
+        return true;
+    }
+
+//    public Node[] findShortestPath(NetworkPeer fromPeer, NetworkPeer toPeer) {
 //        Node[] shortestPath = null;
 //        PathFinder<Path> finder = GraphAlgoFactory.shortestPath(PathExpanders.forTypeAndDirection(P2PRelationship.RelType.Known, Direction.OUTGOING), 15);
+//
 //        Node startNode = findPeerNode(fromPeer, true);
 //        Node endNode = findPeerNode(toPeer, true);
 //        Iterator<Path> i = finder.findAllPaths( startNode, endNode ).iterator();

@@ -5,6 +5,7 @@ import io.onemfive.core.keyring.AuthNRequest;
 import io.onemfive.core.keyring.KeyRingService;
 import io.onemfive.core.notification.NotificationService;
 import io.onemfive.core.notification.SubscriptionRequest;
+import io.onemfive.core.util.AppThread;
 import io.onemfive.data.*;
 import io.onemfive.data.util.DLC;
 import io.onemfive.data.util.FileUtil;
@@ -16,6 +17,7 @@ import io.onemfive.sensors.packet.CommunicationPacket;
 import io.onemfive.sensors.packet.PeerStatus;
 import io.onemfive.sensors.packet.ResponsePacket;
 import io.onemfive.sensors.packet.StatusCode;
+import io.onemfive.sensors.peers.BasePeerManager;
 import io.onemfive.sensors.peers.PeerManager;
 
 import java.io.File;
@@ -43,7 +45,7 @@ public class SensorsService extends BaseService {
     public static final String OPERATION_RECEIVE_LOCAL_PEER = "receiveLocalPeer";
 
     private SensorManager sensorManager;
-    private PeerManager peerManager;
+    private BasePeerManager peerManager;
     private File sensorsDirectory;
     private Properties properties;
 
@@ -542,7 +544,8 @@ public class SensorsService extends BaseService {
 
         // Peer Manager
         try {
-            peerManager = (PeerManager) Class.forName(peerManagerClass).newInstance();
+            peerManager = (BasePeerManager) Class.forName(peerManagerClass).newInstance();
+            peerManager.setSensorsService(this);
         } catch (Exception e) {
             LOG.warning("Exception caught while creating instance of Peer Manager "+sensorManagerClass);
             e.printStackTrace();
@@ -574,7 +577,7 @@ public class SensorsService extends BaseService {
                 LOG.info("Registered sensor "+sensor.getClass().getName());
             }
         }
-        if(sensorManager.init(properties) && peerManager.init(properties, seeds)) {
+        if(sensorManager.init(properties) && peerManager.init(properties)) {
             Subscription subscription = envelope -> routeIn(envelope);
 
             // Subscribe to Text notifications
@@ -640,12 +643,12 @@ public class SensorsService extends BaseService {
 
             DLC.addData(AuthNRequest.class, ar, e3);
             DLC.addRoute(KeyRingService.class, KeyRingService.OPERATION_AUTHN, e3);
+            // Comment out for now
 //            producer.send(e3);
-
-//            new AppThread(peerManager).start(); // Comment out for now
+//            new AppThread(peerManager).start();
 
             updateStatus(ServiceStatus.RUNNING);
-            LOG.info("Inkrypt CDNService Started.");
+            LOG.info("Sensors Service Started.");
         }
         return true;
     }

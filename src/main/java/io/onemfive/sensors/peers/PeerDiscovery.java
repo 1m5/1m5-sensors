@@ -20,17 +20,10 @@ public  class PeerDiscovery extends SensorTask {
     private Logger LOG = Logger.getLogger(PeerDiscovery.class.getName());
     private boolean firstRun = true;
     private SensorsService service;
-    private List<NetworkPeer> seeds;
 
     public PeerDiscovery(String taskName, SensorsService service, TaskRunner taskRunner, Properties properties) {
         super(taskName, taskRunner, properties);
         this.service = service;
-    }
-
-    public PeerDiscovery(String taskName, SensorsService service, TaskRunner taskRunner, Properties properties, List<NetworkPeer> seeds) {
-        super(taskName, taskRunner, properties);
-        this.service = service;
-        this.seeds = seeds;
     }
 
     @Override
@@ -55,9 +48,9 @@ public  class PeerDiscovery extends SensorTask {
         long totalKnown = service.getPeerManager().totalPeers(localPeer);
         if(totalKnown < 1) {
             LOG.info("No peers known.");
-            if(seeds!=null && seeds.size() > 0) {
+            if(SensorsConfig.seeds!=null && SensorsConfig.seeds.size() > 0) {
                 // Launch Seeds
-                for (NetworkPeer seed : seeds) {
+                for (NetworkPeer seed : SensorsConfig.seeds) {
                     LOG.info("Sending Peer Status Request to Seed Peer:\n\tNetwork: " + seed.getNetwork() + "\n\tFingerprint: "+seed.getFingerprint()+"\n\tAddress: "+seed.getAddress());
                 service.pingOut(seed);
                     LOG.info("Sent Peer Status Request to Seed Peer.");

@@ -19,7 +19,7 @@ public abstract class BasePeerManager extends TaskRunner implements PeerManager 
     private static final Logger LOG = Logger.getLogger(BasePeerManager.class.getName());
 
     private Properties properties;
-    private SensorsService service;
+    protected SensorsService service;
     protected NetworkPeer localPeer = new NetworkPeer();
     protected PeerDiscovery peerDiscovery;
 
@@ -70,9 +70,9 @@ public abstract class BasePeerManager extends TaskRunner implements PeerManager 
     }
 
     @Override
-    public Boolean init(Properties properties, List<NetworkPeer> seeds) {
+    public Boolean init(Properties properties) {
         this.properties = properties;
-        peerDiscovery = new PeerDiscovery(PeerDiscovery.class.getSimpleName(), service, this, properties, seeds);
+        peerDiscovery = new PeerDiscovery(PeerDiscovery.class.getSimpleName(), service, this, properties);
         addTask(peerDiscovery);
         return true;
     }
