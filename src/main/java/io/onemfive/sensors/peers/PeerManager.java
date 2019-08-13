@@ -16,7 +16,7 @@ public interface PeerManager extends Runnable {
     Boolean verifyPeer(NetworkPeer peer);
     Boolean savePeer(NetworkPeer peer, Boolean autocreate);
     List<NetworkPeer> getAllPeers(NetworkPeer fromPeer, int pageSize, int beginIndex);
-    Long totalPeers(NetworkPeer fromPeer);
+    Long totalPeers(NetworkPeer fromPeer, P2PRelationship.RelType relType);
     NetworkPeer getRandomPeer(NetworkPeer fromPeer);
     List<NetworkPeer> getReliablesToShare(NetworkPeer fromPeer);
     void reliablesFromRemotePeer(NetworkPeer remotePeer, List<NetworkPeer> reliables);

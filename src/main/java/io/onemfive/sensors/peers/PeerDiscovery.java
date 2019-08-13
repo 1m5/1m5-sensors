@@ -45,14 +45,14 @@ public  class PeerDiscovery extends SensorTask {
             LOG.warning("Sensors Service doesn't have local Peer yet. Can't run Peer Updater.");
             return false;
         }
-        long totalKnown = service.getPeerManager().totalPeers(localPeer);
+        long totalKnown = service.getPeerManager().totalPeers(localPeer, P2PRelationship.RelType.Known);
         if(totalKnown < 1) {
             LOG.info("No peers known.");
             if(SensorsConfig.seeds!=null && SensorsConfig.seeds.size() > 0) {
                 // Launch Seeds
                 for (NetworkPeer seed : SensorsConfig.seeds) {
                     LOG.info("Sending Peer Status Request to Seed Peer:\n\tNetwork: " + seed.getNetwork() + "\n\tFingerprint: "+seed.getFingerprint()+"\n\tAddress: "+seed.getAddress());
-                service.pingOut(seed);
+                    service.pingOut(seed);
                     LOG.info("Sent Peer Status Request to Seed Peer.");
                 }
             } else {

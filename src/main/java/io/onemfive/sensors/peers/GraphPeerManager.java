@@ -50,10 +50,10 @@ public class GraphPeerManager extends BasePeerManager {
             LOG.warning("IOException caught retrieving SensorsService's service directory.");
             return false;
         }
-        properties.setProperty("1m5.neo4j.db.location", baseDir + "/" + DBNAME);
+        db.setLocation(baseDir + "/" + DBNAME);
         String cleanDB = properties.getProperty("onemfive.sensors.db.cleanOnRestart");
         if (Boolean.parseBoolean(cleanDB)) {
-            FileUtil.rmdir(baseDir + "/" + DBNAME, false);
+            FileUtil.rmdir(db.getLocation(), false);
             LOG.info("Cleaned " + DBNAME);
         }
         db.init(properties);
@@ -128,7 +128,7 @@ public class GraphPeerManager extends BasePeerManager {
             return true;
         else if(autocreate) {
             LOG.info("Creating NetworkPeer in graph...");
-            long numberPeers = totalPeers(getLocalPeer());
+            long numberPeers = totalPeers(getLocalPeer(), P2PRelationship.RelType.Known);
             if(numberPeers <= SensorsConfig.MaxPT) {
                 try (Transaction tx = db.getGraphDb().beginTx()) {
                     Node n = db.getGraphDb().createNode(PEER_LABEL);
@@ -204,7 +204,7 @@ public class GraphPeerManager extends BasePeerManager {
     public NetworkPeer getRandomPeer(NetworkPeer p) {
         LOG.info("Get Random Peer...");
         NetworkPeer peer = null;
-        long numberPeers = totalPeers(p);
+        long numberPeers = totalPeers(p, P2PRelationship.RelType.Known);
         if(numberPeers > 0) {
             long randomIndex = (long)(Math.random() * numberPeers);
             List<NetworkPeer> peers = getPeersByIndexRange(p, randomIndex, 1);
@@ -216,10 +216,10 @@ public class GraphPeerManager extends BasePeerManager {
 
     // TODO: Move this to file system to speed up
     @Override
-    public Long totalPeers(NetworkPeer p) {
+    public Long totalPeers(NetworkPeer p, P2PRelationship.RelType relType) {
         long count = -1;
         try (Transaction tx = db.getGraphDb().beginTx()) {
-            String cql = "MATCH (n {address: '"+p.getAddress()+"'})->()" +
+            String cql = "MATCH (n {address: '"+p.getAddress()+"'})-[:" + relType.name() + "]->()" +
                     " RETURN count(*) as total";
             Result r = db.getGraphDb().execute(cql);
             if (r.hasNext()) {
@@ -447,7 +447,7 @@ public class GraphPeerManager extends BasePeerManager {
             LOG.info("Remote Peer saved.");
             relatePeers(getLocalPeer(), remotePeer, P2PRelationship.RelType.Known);
             LOG.info("Remote Peer related as known to local peer.");
-            long numberKnown = totalPeers(getLocalPeer());
+            long numberKnown = totalPeers(getLocalPeer(), P2PRelationship.RelType.Known);
             NetworkPeer remoteRelP;
             for (NetworkPeer known : remoteKnown) {
                 if (numberKnown + saved > SensorsConfig.MaxPT)
@@ -577,7 +577,7 @@ public class GraphPeerManager extends BasePeerManager {
                     "\ttotal acks: "+totalAcks+"\n"+
                     "\tavg round trip latency: "+avgAckLatency+"ms\n} of remote peer "+endPeer+" with start peer "+startPeer);
 
-        } else if(totalPeers(startPeer) <= SensorsConfig.MaxPT) {
+        } else if(totalPeers(startPeer, P2PRelationship.RelType.Known) <= SensorsConfig.MaxPT) {
             relatePeers(startPeer, endPeer, P2PRelationship.RelType.Known);
             LOG.info("New known peer: "+endPeer);
         } else {
