@@ -123,7 +123,7 @@ public class SensorManagerUncensored extends SensorManagerSimple {
                         if(getActiveSensors().get(LIFI_SENSOR_NAME) == null) {
                             err = "Radio blocked and LiFi Sensor not active. Please register LiFi Sensor to ensure Radio can be re-routed through LiFi when blocked.";
                         } else {
-                            LOG.info("LiFi Sensor is active");
+                            LOG.info("LiFi Sensor is active; switching to LiFi...");
                             s = getActiveSensors().get(LIFI_SENSOR_NAME);
                         }
                     }
