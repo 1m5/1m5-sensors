@@ -74,86 +74,89 @@ public class SensorsService extends BaseService {
 
     private void handleAll(Envelope e) {
         Route r = e.getRoute();
-        Sensor sensor = sensorManager.selectSensor(e);
-        if(sensor != null) {
-            switch (r.getOperation()) {
-                case OPERATION_SEND : {
-                    // Verify we're aware of 1M5 node
-                    SensorRequest request = (SensorRequest)DLC.getData(SensorRequest.class,e);
-                    if(request == null){
-                        LOG.warning("No SensorRequest in Envelope.");
-                        request = new SensorRequest();
-                        request.errorCode = ServiceRequest.REQUEST_REQUIRED;
-                        DLC.addData(SensorRequest.class, request, e);
+        switch (r.getOperation()) {
+            case OPERATION_SEND : {
+                // Verify we're aware of 1M5 node
+                SensorRequest request = (SensorRequest)DLC.getData(SensorRequest.class,e);
+                if(request == null){
+                    LOG.warning("No SensorRequest in Envelope.");
+                    request = new SensorRequest();
+                    request.errorCode = ServiceRequest.REQUEST_REQUIRED;
+                    DLC.addData(SensorRequest.class, request, e);
+                    return;
+                }
+                DID to = request.to;
+                if(to != null) {
+                    NetworkPeer peer = to.getPrioritizedPeer();
+                    if (peer == null) {
+                        LOG.warning("No Network Peers in TO address. Unable to send.");
                         return;
                     }
-                    DID to = request.to;
-                    if(to != null) {
-                        NetworkPeer peer = to.getPrioritizedPeer();
-                        if (peer == null) {
-                            LOG.warning("No Network Peers in TO address. Unable to send.");
-                            return;
-                        }
-                        peerManager.verifyPeer(peer);
-                    }
-                    LOG.info("Sending Envelope to selected Sensor...");
-                    if(!sensor.send(e)) {
-                        Message m = e.getMessage();
-                        boolean reroute = false;
-                        if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
-                            for(String err : m.getErrorMessages()) {
-                                LOG.warning(err);
-                                switch(err) {
-                                    case "408": {
-                                        LOG.warning("408 received in response.");
-                                        // Request timed out - let's forward it to another 1M5 peer using escalating sensors
-                                        reroute = true;
-                                        break;
-                                    }
-                                    case "451": {
-                                        LOG.warning("451 received in response.");
-                                        // Unavailable for Legal Reasons - let's forward it to another 1M5 peer with I2P
-                                        reroute = true;
-                                        break;
-                                    }
-                                }
-                            }
-                            if(reroute) {
-                                LOG.warning("Can we reroute?");
-                                sensor = sensorManager.getEscalatedUnblockedSensor(sensor.getClass().getName());
-                                if(sensor!=null) {
-                                    LOG.warning("Rerouting through sensor: "+sensor.getClass().getName());
-                                    m.clearErrorMessages();
-                                    sensor.send(e);
+                    peerManager.verifyPeer(peer);
+                }
+                LOG.info("Sending Envelope to selected Sensor...");
+                Sensor sensor = sensorManager.selectSensor(e);
+                if(!sensor.send(e)) {
+                    Message m = e.getMessage();
+                    boolean reroute = false;
+                    if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
+                        for(String err : m.getErrorMessages()) {
+                            LOG.warning(err);
+                            if("BLOCKED".equals(err)) {
+                                if(e.getSensitivity()== Envelope.Sensitivity.NONE) {
+                                    LOG.info("No security required. Assuming block means the site is down.");
                                 } else {
-                                    LOG.warning("Rerouting desired but no Sensor available for rerouting.");
+                                    LOG.info("Some level of security required. Re-routing through another peer.");
+                                    reroute = true;
                                 }
                             }
                         }
                     }
-                    break;
+                    if(reroute || sensor.getStatus()==SensorStatus.NETWORK_BLOCKED) {
+                        LOG.info("Can we reroute?");
+                        String fromNetwork = sensor.getClass().getName();
+                        sensor = sensorManager.selectSensor(e);
+                        if(sensor!=null) {
+                            String toNetwork = sensor.getClass().getName();
+                            if(!fromNetwork.equals(toNetwork)) {
+                                LOG.info("Escalated sensor: " + toNetwork);
+                                NetworkPeer newToPeer = peerManager.getRandomPeer(peerManager.getLocalPeer());
+                                if (newToPeer == null) {
+                                    LOG.warning("No other peers to route blocked request. Request is dead.");
+                                } else {
+                                    // Clear error messages
+                                    if (m != null) {
+                                        m.clearErrorMessages();
+                                    }
+                                    // Send through escalated network
+                                    sensor.send(e);
+                                }
+                            }
+                        } else {
+                            LOG.warning("Rerouting desired but no Sensor available for rerouting.");
+                        }
+                    }
                 }
-                case OPERATION_REPLY : {
-                    LOG.info("Replying with Envelope to requester...");
-                    sensor.reply(e);
-                    break;
-                }
-                case OPERATION_UPDATE_LOCAL_DID: {
-                    LOG.info("Update local DID...");
-                    peerManager.updateLocalPeer((DID)DLC.getData(DID.class,e));break;
-                }
-                case OPERATION_RECEIVE_LOCAL_PEER: {
-                    LOG.info("Receive Local CDNPeer...");
-                    peerManager.updateLocalPeer(((AuthNRequest) DLC.getData(AuthNRequest.class,e)));break;
-                }
-                default: {
-                    LOG.warning("Operation ("+r.getOperation()+") not supported. Sending to Dead Letter queue.");
-                    deadLetter(e);
-                }
+                break;
             }
-        } else {
-            LOG.warning("Unable to determine sensor. Sending to Dead Letter queue.");
-            deadLetter(e);
+            case OPERATION_REPLY : {
+                LOG.info("Replying with Envelope to requester...");
+                Sensor sensor = sensorManager.selectSensor(e);
+                sensor.reply(e);
+                break;
+            }
+            case OPERATION_UPDATE_LOCAL_DID: {
+                LOG.info("Update local DID...");
+                peerManager.updateLocalPeer((DID)DLC.getData(DID.class,e));break;
+            }
+            case OPERATION_RECEIVE_LOCAL_PEER: {
+                LOG.info("Receive Local CDNPeer...");
+                peerManager.updateLocalPeer(((AuthNRequest) DLC.getData(AuthNRequest.class,e)));break;
+            }
+            default: {
+                LOG.warning("Operation ("+r.getOperation()+") not supported. Sending to Dead Letter queue.");
+                deadLetter(e);
+            }
         }
     }
 
@@ -488,6 +491,10 @@ public class SensorsService extends BaseService {
 
     public SensorManager getSensorManager() {
         return sensorManager;
+    }
+
+    public File getSensorsDirectory() {
+        return sensorsDirectory;
     }
 
     @Override
