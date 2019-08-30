@@ -185,62 +185,6 @@ public class SensorManagerSimple extends SensorManagerBase {
         return highest;
     }
 
-    @Override
-    public Sensor getEscalatedUnblockedSensor(String currentSensor) {
-        Sensor s = null;
-        Sensor tempS = null;
-        // Escalation Order: HTTP, Tor, I2P, Radio, LiFi
-        while(s==null) {
-            switch (currentSensor) {
-                case HTTP_SENSOR_NAME: {
-                    tempS = activeSensors.get(TOR_SENSOR_NAME);
-                    if(tempS!=null && SensorStatus.NETWORK_BLOCKED!=tempS.getStatus()) {
-                        s = tempS;
-                    } else {
-                        currentSensor = TOR_SENSOR_NAME;
-                    }
-                    break;
-                }
-                case TOR_SENSOR_NAME: {
-                    tempS = activeSensors.get(I2P_SENSOR_NAME);
-                    if(tempS!=null && SensorStatus.NETWORK_BLOCKED!=tempS.getStatus()) {
-                        s = tempS;
-                    } else {
-                        currentSensor = I2P_SENSOR_NAME;
-                    }
-                    break;
-                }
-                case I2P_SENSOR_NAME: {
-                    tempS = activeSensors.get(RADIO_SENSOR_NAME);
-                    if(tempS!=null && SensorStatus.NETWORK_BLOCKED!=tempS.getStatus()) {
-                        s = tempS;
-                    } else {
-                        currentSensor = RADIO_SENSOR_NAME;
-                    }
-                    break;
-                }
-                case RADIO_SENSOR_NAME: {
-                    tempS = activeSensors.get(LIFI_SENSOR_NAME);
-                    if(tempS!=null && SensorStatus.NETWORK_BLOCKED!=tempS.getStatus()) {
-                        s = tempS;
-                    } else {
-                        currentSensor = LIFI_SENSOR_NAME;
-                    }
-                    break;
-                }
-                case LIFI_SENSOR_NAME: {
-                    LOG.warning("No Sensor beyond LiFi yet.");
-                    return null;
-                }
-                default: {
-                    LOG.warning("Sensor not supported: "+currentSensor);
-                    return null;
-                }
-            }
-        }
-        return s;
-    }
-
     public void sensorError(final String sensorID) {
         // Sensor has Error, restart it if number of restarts is not greater than 3
         if(activeSensors.get(sensorID) != null) {
