@@ -5,6 +5,8 @@ import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
+import java.io.File;
+
 /**
  * Expected behavior from a Sensor.
  *
@@ -27,4 +29,5 @@ public interface Sensor extends LifeCycle {
     void setSensorManager(SensorManager sensorManager);
     void setSensitivity(Envelope.Sensitivity sensitivity);
     void setPriority(Integer priority);
+    File getDirectory();
 }

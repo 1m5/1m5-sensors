@@ -2,6 +2,7 @@ package io.onemfive.sensors;
 
 import io.onemfive.data.Envelope;
 
+import java.io.File;
 import java.util.Properties;
 
 public interface SensorManager {
@@ -16,10 +17,10 @@ public interface SensorManager {
     boolean isActive(String sensorName);
     Sensor selectSensor(Envelope envelope);
     void registerSensor(Sensor sensor);
-    Sensor getEscalatedUnblockedSensor(String startingSensor);
     void updateSensorStatus(final String sensorID, SensorStatus sensorStatus);
     Sensor getRegisteredSensor(String sensorName);
     boolean shutdown();
     void sendToBus(Envelope envelope);
     void suspend(Envelope envelope);
+    File getSensorDirectory(String sensorName);
 }

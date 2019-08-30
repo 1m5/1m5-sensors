@@ -3,6 +3,7 @@ package io.onemfive.sensors;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,6 +62,11 @@ public abstract class SensorManagerBase implements SensorManager {
 
     public NetworkPeer getLocalPeer() {
         return localPeer;
+    }
+
+    @Override
+    public File getSensorDirectory(String sensorName) {
+        return new File(sensorsService.getSensorsDirectory(), sensorName);
     }
 
     @Override

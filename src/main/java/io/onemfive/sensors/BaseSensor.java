@@ -4,6 +4,7 @@ import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,6 +23,7 @@ public abstract class BaseSensor implements Sensor {
     private Integer priority;
     protected Map<String,NetworkPeer> peers = new HashMap<>();
     protected TaskRunner taskRunner;
+    protected String directory;
 
     protected void updateStatus(SensorStatus sensorStatus) {
         this.sensorStatus = sensorStatus;
@@ -86,5 +88,10 @@ public abstract class BaseSensor implements Sensor {
     @Override
     public Integer getRestartAttempts() {
         return restartAttempts;
+    }
+
+    @Override
+    public File getDirectory() {
+        return sensorManager.getSensorDirectory(this.getClass().getName());
     }
 }
