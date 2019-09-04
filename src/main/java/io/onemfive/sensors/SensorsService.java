@@ -76,23 +76,19 @@ public class SensorsService extends BaseService {
         Route r = e.getRoute();
         switch (r.getOperation()) {
             case OPERATION_SEND : {
-                // Verify we're aware of 1M5 node
                 SensorRequest request = (SensorRequest)DLC.getData(SensorRequest.class,e);
                 if(request == null){
-                    LOG.warning("No SensorRequest in Envelope.");
-                    request = new SensorRequest();
-                    request.errorCode = ServiceRequest.REQUEST_REQUIRED;
-                    DLC.addData(SensorRequest.class, request, e);
-                    return;
-                }
-                DID to = request.to;
-                if(to != null) {
-                    NetworkPeer peer = to.getPrioritizedPeer();
-                    if (peer == null) {
-                        LOG.warning("No Network Peers in TO address. Unable to send.");
-                        return;
+                    LOG.info("No SensorRequest in Envelope. Sending blindly...");
+                } else {
+                    DID to = request.to;
+                    if (to != null) {
+                        NetworkPeer peer = to.getPrioritizedPeer();
+                        if (peer == null) {
+                            LOG.warning("No Network Peers in TO address. Unable to send.");
+                            return;
+                        }
+                        peerManager.verifyPeer(peer);
                     }
-                    peerManager.verifyPeer(peer);
                 }
                 LOG.info("Sending Envelope to selected Sensor...");
                 Sensor sensor = sensorManager.selectSensor(e);
