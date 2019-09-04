@@ -15,6 +15,7 @@ import java.util.logging.Logger;
 public class SensorManagerSimple extends SensorManagerBase {
 
     private Logger LOG = Logger.getLogger(SensorManagerSimple.class.getName());
+    private Map<String,Integer> sensorBlocks = new HashMap<>();
 
     @Override
     public void updateSensorStatus(String sensorID, SensorStatus sensorStatus) {
@@ -54,7 +55,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             case NETWORK_STOPPED: {
                 LOG.info(sensorID + " reporting stopped.");
                 if(activeSensors.containsKey(sensorID)) {
-                    // Active I2P Sensor Stopped, attempt to restart
+                    // Active Sensor Stopped, attempt to restart
                     Sensor sensor = activeSensors.get(sensorID);
                     if(sensor.restart()) {
                         LOG.info(sensorID+" restarted after disconnection.");
@@ -63,7 +64,17 @@ public class SensorManagerSimple extends SensorManagerBase {
                 break;
             }
             case NETWORK_BLOCKED: {
-                LOG.info(sensorID + " reporting blocked.");
+                sensorBlocks.putIfAbsent(sensorID, 0);
+                sensorBlocks.put(sensorID, sensorBlocks.get(sensorID) + 1);
+                LOG.info(sensorID + " reporting blocked: "+sensorBlocks.get(sensorID));
+                if(sensorBlocks.get(sensorID) > 10 && activeSensors.containsKey(sensorID)) {
+                    LOG.info(sensorID + " registered 10 blocks. Restarting to determine if it's the sensor...");
+                    // Active Sensor Stopped, attempt to restart
+                    Sensor sensor = activeSensors.get(sensorID);
+                    if(sensor.restart()) {
+                        sensorBlocks.put(sensorID, 0);
+                    }
+                }
                 break;
             }
             case NETWORK_ERROR: {
