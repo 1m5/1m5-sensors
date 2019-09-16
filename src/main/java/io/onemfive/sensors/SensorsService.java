@@ -90,48 +90,53 @@ public class SensorsService extends BaseService {
                         peerManager.verifyPeer(peer);
                     }
                 }
-                LOG.info("Sending Envelope to selected Sensor...");
                 Sensor sensor = sensorManager.selectSensor(e);
-                if(!sensor.send(e)) {
-                    Message m = e.getMessage();
-                    boolean reroute = false;
-                    if(m!=null && m.getErrorMessages()!=null && m.getErrorMessages().size()>0) {
-                        for(String err : m.getErrorMessages()) {
-                            LOG.warning(err);
-                            if("BLOCKED".equals(err)) {
-                                if(e.getSensitivity()== Envelope.Sensitivity.NONE) {
-                                    LOG.info("No security required. Assuming block means the site is down.");
-                                } else {
-                                    LOG.info("Some level of security required. Re-routing through another peer.");
-                                    reroute = true;
-                                }
-                            }
-                        }
-                    }
-                    if(reroute || sensor.getStatus()==SensorStatus.NETWORK_BLOCKED) {
-                        LOG.info("Can we reroute?");
-                        String fromNetwork = sensor.getClass().getName();
-                        sensor = sensorManager.selectSensor(e);
-                        if(sensor!=null) {
-                            String toNetwork = sensor.getClass().getName();
-                            if(!fromNetwork.equals(toNetwork)) {
-                                LOG.info("Escalated sensor: " + toNetwork);
-                                NetworkPeer newToPeer = peerManager.getRandomPeer(peerManager.getLocalPeer());
-                                if (newToPeer == null) {
-                                    LOG.warning("No other peers to route blocked request. Request is dead.");
-                                } else {
-                                    // Clear error messages
-                                    if (m != null) {
-                                        m.clearErrorMessages();
+                if(sensor != null) {
+                    LOG.info("Sending Envelope to selected Sensor...");
+                    if (!sensor.send(e)) {
+                        Message m = e.getMessage();
+                        boolean reroute = false;
+                        if (m != null && m.getErrorMessages() != null && m.getErrorMessages().size() > 0) {
+                            for (String err : m.getErrorMessages()) {
+                                LOG.warning(err);
+                                if ("BLOCKED".equals(err)) {
+                                    if (e.getSensitivity() == Envelope.Sensitivity.NONE) {
+                                        LOG.info("No security required. Assuming block means the site is down.");
+                                    } else {
+                                        LOG.info("Some level of security required. Re-routing through another peer.");
+                                        reroute = true;
                                     }
-                                    // Send through escalated network
-                                    sensor.send(e);
                                 }
                             }
-                        } else {
-                            LOG.warning("Rerouting desired but no Sensor available for rerouting.");
+                        }
+                        if (reroute || sensor.getStatus() == SensorStatus.NETWORK_BLOCKED) {
+                            LOG.info("Can we reroute?");
+                            String fromNetwork = sensor.getClass().getName();
+                            sensor = sensorManager.selectSensor(e);
+                            if (sensor != null) {
+                                String toNetwork = sensor.getClass().getName();
+                                if (!fromNetwork.equals(toNetwork)) {
+                                    LOG.info("Escalated sensor: " + toNetwork);
+                                    NetworkPeer newToPeer = peerManager.getRandomPeer(peerManager.getLocalPeer());
+                                    if (newToPeer == null) {
+                                        LOG.warning("No other peers to route blocked request. Request is dead.");
+                                    } else {
+                                        // Clear error messages
+                                        if (m != null) {
+                                            m.clearErrorMessages();
+                                        }
+                                        // Send through escalated network
+                                        sensor.send(e);
+                                    }
+                                }
+                            } else {
+                                LOG.warning("Rerouting desired but no Sensor available for rerouting.");
+                            }
                         }
                     }
+                } else {
+                    LOG.warning("No sensor available to send message. Dead lettering...");
+                    deadLetter(e);
                 }
                 break;
             }
