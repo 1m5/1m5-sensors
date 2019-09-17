@@ -78,7 +78,7 @@ public class SensorsService extends BaseService {
             case OPERATION_SEND : {
                 SensorRequest request = (SensorRequest)DLC.getData(SensorRequest.class,e);
                 if(request == null){
-                    LOG.info("No SensorRequest in Envelope. Sending blindly...");
+                    LOG.info("No SensorRequest in Envelope. Not a P2P request...making resource request...");
                 } else {
                     DID to = request.to;
                     if (to != null) {
