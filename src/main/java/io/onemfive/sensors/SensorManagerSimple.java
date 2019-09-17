@@ -15,7 +15,8 @@ import java.util.logging.Logger;
 public class SensorManagerSimple extends SensorManagerBase {
 
     private Logger LOG = Logger.getLogger(SensorManagerSimple.class.getName());
-    private Map<String,Integer> sensorBlocks = new HashMap<>();
+    private final long MAX_BLOCK_TIME_BETWEEN_RESTARTS = 40 * 60 * 1000; // 40 minutes
+    private Map<String,Long> sensorBlocks = new HashMap<>();
 
     @Override
     public void updateSensorStatus(String sensorID, SensorStatus sensorStatus) {
@@ -46,6 +47,9 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case NETWORK_CONNECTED: {
                 LOG.info(sensorID + " reporting connected.");
+                if(sensorBlocks.get(sensorID)!=null) {
+                    sensorBlocks.remove(sensorID);
+                }
                 break;
             }
             case NETWORK_STOPPING: {
@@ -64,16 +68,14 @@ public class SensorManagerSimple extends SensorManagerBase {
                 break;
             }
             case NETWORK_BLOCKED: {
-                sensorBlocks.putIfAbsent(sensorID, 0);
-                sensorBlocks.put(sensorID, sensorBlocks.get(sensorID) + 1);
-                LOG.warning(sensorID + " reporting blocked "+sensorBlocks.get(sensorID)+" time(s).");
-                if(sensorBlocks.get(sensorID) > 3 && activeSensors.containsKey(sensorID)) {
-                    LOG.warning(sensorID + " reported 4 blocks. Restarting to determine if it's the sensor...");
-                    // Active Sensor Stopped, attempt to restart
-                    Sensor sensor = activeSensors.get(sensorID);
-                    if(sensor.restart()) {
-                        sensorBlocks.put(sensorID, 0);
-                    }
+                long now = System.currentTimeMillis();
+                sensorBlocks.putIfAbsent(sensorID, now);
+                if((now - sensorBlocks.get(sensorID)) > MAX_BLOCK_TIME_BETWEEN_RESTARTS) {
+                    LOG.warning(sensorID + " reporting blocked longer than 40 minutes. Restarting...");
+                    // Active Sensor Blocked, attempt to restart
+                    activeSensors.get(sensorID).restart();
+                    // Reset blocked start time
+                    sensorBlocks.put(sensorID, now);
                 }
                 break;
             }
