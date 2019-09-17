@@ -3,6 +3,11 @@ package io.onemfive.sensors;
 import io.onemfive.core.ServiceRequest;
 import io.onemfive.data.DID;
 
+/**
+ * Request to use a Sensor for external communications.
+ *
+ * // TODO: Extend with a P2PSensorRequest and ResourceRequest. The former will contain the DIDs and the latter a URI.
+ */
 public class SensorRequest extends ServiceRequest {
     public static int TO_PEER_REQUIRED = 1;
     public static int TO_PEER_WRONG_NETWORK = 2;
