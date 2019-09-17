@@ -133,6 +133,8 @@ public class SensorsService extends BaseService {
                                 LOG.warning("Rerouting desired but no Sensor available for rerouting.");
                             }
                         }
+                    } else {
+                        LOG.warning("Error sending message.");
                     }
                 } else {
                     LOG.warning("No sensor available to send message. Dead lettering...");
