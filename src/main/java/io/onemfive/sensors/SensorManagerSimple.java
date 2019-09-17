@@ -66,9 +66,9 @@ public class SensorManagerSimple extends SensorManagerBase {
             case NETWORK_BLOCKED: {
                 sensorBlocks.putIfAbsent(sensorID, 0);
                 sensorBlocks.put(sensorID, sensorBlocks.get(sensorID) + 1);
-                LOG.info(sensorID + " reporting blocked: "+sensorBlocks.get(sensorID));
-                if(sensorBlocks.get(sensorID) > 10 && activeSensors.containsKey(sensorID)) {
-                    LOG.info(sensorID + " registered 10 blocks. Restarting to determine if it's the sensor...");
+                LOG.warning(sensorID + " reporting blocked "+sensorBlocks.get(sensorID)+" time(s).");
+                if(sensorBlocks.get(sensorID) > 3 && activeSensors.containsKey(sensorID)) {
+                    LOG.warning(sensorID + " reported 4 blocks. Restarting to determine if it's the sensor...");
                     // Active Sensor Stopped, attempt to restart
                     Sensor sensor = activeSensors.get(sensorID);
                     if(sensor.restart()) {
