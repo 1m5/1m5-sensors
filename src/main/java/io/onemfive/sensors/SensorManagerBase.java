@@ -4,7 +4,9 @@ import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class SensorManagerBase implements SensorManager {
@@ -12,6 +14,7 @@ public abstract class SensorManagerBase implements SensorManager {
     protected final Map<String, Sensor> registeredSensors = new HashMap<>();
     protected final Map<String, Sensor> activeSensors = new HashMap<>();
     protected final Map<String, Sensor> blockedSensors = new HashMap<>();
+    protected final Map<String, List<SensorStatusListener>> listeners = new HashMap<>();
 
     protected NetworkPeer localPeer;
     protected Map<String, NetworkPeer> peers = new HashMap<>();
@@ -77,5 +80,22 @@ public abstract class SensorManagerBase implements SensorManager {
     @Override
     public void suspend(Envelope envelope) {
         sensorsService.suspend(envelope);
+    }
+
+    @Override
+    public boolean registerSensorStatusListener(String sensorId, SensorStatusListener listener) {
+        listeners.putIfAbsent(sensorId, new ArrayList<>());
+        if(!listeners.get(sensorId).contains(listener)) {
+            listeners.get(sensorId).add(listener);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean unregisterSensorStatusListener(String sensorId, SensorStatusListener listener) {
+        if(listeners.get(sensorId)!=null) {
+            listeners.remove(listener);
+        }
+        return true;
     }
 }

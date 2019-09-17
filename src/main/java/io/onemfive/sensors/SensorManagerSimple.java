@@ -125,6 +125,13 @@ public class SensorManagerSimple extends SensorManagerBase {
         }
         // Now update the Service's status based on the this Sensor's status
         sensorsService.determineStatus(sensorStatus);
+        // Now update listeners
+        if(listeners.get(sensorID)!=null) {
+            List<SensorStatusListener> sslList = listeners.get(sensorID);
+            for(SensorStatusListener ssl : sslList) {
+                ssl.statusUpdated(sensorStatus);
+            }
+        }
     }
 
     @Override

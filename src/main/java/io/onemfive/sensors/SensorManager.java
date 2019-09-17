@@ -23,4 +23,6 @@ public interface SensorManager {
     void sendToBus(Envelope envelope);
     void suspend(Envelope envelope);
     File getSensorDirectory(String sensorName);
+    boolean registerSensorStatusListener(String sensorId, SensorStatusListener listener);
+    boolean unregisterSensorStatusListener(String sensorId, SensorStatusListener listener);
 }
