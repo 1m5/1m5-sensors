@@ -94,7 +94,7 @@ public abstract class SensorManagerBase implements SensorManager {
     @Override
     public boolean unregisterSensorStatusListener(String sensorId, SensorStatusListener listener) {
         if(listeners.get(sensorId)!=null) {
-            listeners.remove(listener);
+            listeners.get(sensorId).remove(listener);
         }
         return true;
     }
