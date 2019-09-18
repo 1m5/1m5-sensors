@@ -483,6 +483,9 @@ public class SensorsService extends BaseService {
     private Boolean allSensorsWithStatus(SensorStatus sensorStatus) {
         LOG.info("Verifying all sensors with status: "+sensorStatus.name());
         Collection<Sensor> sensors = ((SensorManagerBase)sensorManager).getActiveSensors().values();
+        if(sensors.size() == 0) {
+            return false;
+        }
         for(Sensor s : sensors) {
             LOG.info(s.getClass().getName()+" status: "+s.getStatus().name());
             if(s.getStatus() != sensorStatus){
