@@ -17,6 +17,7 @@ public enum SensorStatus {
     NETWORK_PORT_CONFLICT, // Optional 3.3 - means this sensor was unable to open the supplied port - likely being blocked; recommend changing ports
     NETWORK_CONNECTING, // 4 - Attempting to connect with network
     NETWORK_CONNECTED, // 5 - Network successfully connected and ready to handle requests
+    NETWORK_VERIFIED, // 6 - Network has claimed to be connected (NETWORK_CONNECTED) and we have received a message from the network verifying it is
     NETWORK_STOPPING, // Network connection is hanging, e.g. unacceptable response times, begin looking at alternatives
     NETWORK_STOPPED, // Network connection failed, try another or recommend alternative
     NETWORK_BLOCKED, // Network connection being blocked.
