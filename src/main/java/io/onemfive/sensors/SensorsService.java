@@ -355,7 +355,7 @@ public class SensorsService extends BaseService {
      */
     void determineStatus(SensorStatus sensorStatus) {
         ServiceStatus currentServiceStatus = getServiceStatus();
-        LOG.info("Status updated to: "+sensorStatus.name());
+        LOG.info("Current Sensors Service Status: "+currentServiceStatus+"; Inbound sensor status: "+sensorStatus.name());
         switch (sensorStatus) {
             case INITIALIZING: {
                 if(currentServiceStatus == ServiceStatus.RUNNING)
@@ -483,8 +483,10 @@ public class SensorsService extends BaseService {
     }
 
     private Boolean allSensorsWithStatus(SensorStatus sensorStatus) {
+        LOG.info("Verifying all sensors with status: "+sensorStatus.name());
         Collection<Sensor> sensors = ((SensorManagerBase)sensorManager).getActiveSensors().values();
         for(Sensor s : sensors) {
+            LOG.info(s.getClass().getName()+" status: "+s.getStatus().name());
             if(s.getStatus() != sensorStatus){
                 return false;
             }
@@ -657,7 +659,7 @@ public class SensorsService extends BaseService {
 //            producer.send(e3);
 //            new AppThread(peerManager).start();
 
-            updateStatus(ServiceStatus.RUNNING);
+            updateStatus(ServiceStatus.WAITING);
             LOG.info("Sensors Service Started.");
         }
         return true;
