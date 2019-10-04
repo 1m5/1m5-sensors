@@ -68,10 +68,11 @@ public class SensorManagerSimple extends SensorManagerBase {
                 break;
             }
             case NETWORK_BLOCKED: {
+                LOG.info(sensorID + " reporting blocked.");
                 long now = System.currentTimeMillis();
                 sensorBlocks.putIfAbsent(sensorID, now);
                 if((now - sensorBlocks.get(sensorID)) > MAX_BLOCK_TIME_BETWEEN_RESTARTS) {
-                    LOG.warning(sensorID + " reporting blocked longer than 40 minutes. Restarting...");
+                    LOG.warning(sensorID + " reporting blocked longer than 9 minutes. Restarting...");
                     // Active Sensor Blocked, attempt to restart
                     activeSensors.get(sensorID).restart();
                     // Reset blocked start time
