@@ -57,6 +57,10 @@ public class SensorsService extends BaseService {
         return peerManager;
     }
 
+    Properties getProperties() {
+        return properties;
+    }
+
     @Override
     public void handleDocument(Envelope envelope) {
         handleAll(envelope);

@@ -4,6 +4,7 @@ import io.onemfive.core.util.AppThread;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.Route;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
@@ -86,6 +87,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case PAUSING: {
                 LOG.info(sensorID + " reporting pausing....");
+                // TODO: Persist messages to this sensor until unpaused then replay in order.
                 break;
             }
             case PAUSED: {
@@ -94,6 +96,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case UNPAUSING: {
                 LOG.info(sensorID + " reporting unpausing....");
+                // TODO: Replay any paused messages in order while resuming normal operations
                 break;
             }
             case SHUTTING_DOWN: {
@@ -119,7 +122,22 @@ public class SensorManagerSimple extends SensorManagerBase {
                 break;
             }
             case ERROR: {
-                LOG.info(sensorID + " reporting error....");
+                LOG.info(sensorID + " reporting error. Initiating hard restart...");
+                Sensor s = activeSensors.get(sensorID);
+                // Give stopping sensors a chance to clean up anything possible
+                activeSensors.remove(sensorID);
+                s.gracefulShutdown();
+                // Regardless if it succeeds or not, replace it with a new instance and start it up
+                try {
+                    s = (Sensor)Class.forName(sensorID).getConstructor().newInstance();
+                    if(s.start(sensorsService.getProperties())) {
+                        activeSensors.put(sensorID, s);
+                    } else {
+                        LOG.warning("Unable to hard restart sensor: "+sensorID);
+                    }
+                } catch (Exception e) {
+                    LOG.warning("Unable to create new instance of sensor for hard restart: "+sensorID);
+                }
                 break;
             }
             default: LOG.warning("Sensor Status for sensor "+sensorID+" not being handled: "+sensorStatus.name());
@@ -204,23 +222,6 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
         }
         return highest;
-    }
-
-    public void sensorError(final String sensorID) {
-        // Sensor has Error, restart it if number of restarts is not greater than 3
-        if(activeSensors.get(sensorID) != null) {
-            if(activeSensors.get(sensorID).getRestartAttempts() <= 3) {
-                new AppThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activeSensors.get(sensorID).restart();
-                    }
-                }).start();
-            } else {
-                // Sensor is apparently not working. De-activate it.
-                activeSensors.remove(sensorID);
-            }
-        }
     }
 
     @Override
