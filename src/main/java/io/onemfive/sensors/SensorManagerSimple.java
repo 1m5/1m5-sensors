@@ -16,7 +16,7 @@ import java.util.logging.Logger;
 public class SensorManagerSimple extends SensorManagerBase {
 
     private Logger LOG = Logger.getLogger(SensorManagerSimple.class.getName());
-    private final long MAX_BLOCK_TIME_BETWEEN_RESTARTS = 40 * 60 * 1000; // 40 minutes
+    private final long MAX_BLOCK_TIME_BETWEEN_RESTARTS = 10 * 60 * 1000; // 10 minutes
     private Map<String,Long> sensorBlocks = new HashMap<>();
 
     @Override
@@ -73,7 +73,7 @@ public class SensorManagerSimple extends SensorManagerBase {
                 long now = System.currentTimeMillis();
                 sensorBlocks.putIfAbsent(sensorID, now);
                 if((now - sensorBlocks.get(sensorID)) > MAX_BLOCK_TIME_BETWEEN_RESTARTS) {
-                    LOG.warning(sensorID + " reporting blocked longer than 9 minutes. Restarting...");
+                    LOG.warning(sensorID + " reporting blocked longer than "+(MAX_BLOCK_TIME_BETWEEN_RESTARTS/60000)+" minutes. Restarting...");
                     // Active Sensor Blocked, attempt to restart
                     activeSensors.get(sensorID).restart();
                     // Reset blocked start time
