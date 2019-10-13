@@ -1,0 +1,114 @@
+{
+  "peers": [
+    {
+      "environment": "devnet",
+      "banned": [],
+      "seeds":[
+        {
+          "network": "1M5",
+          "identityAddress": "",
+          "identityFingerprint": "",
+          "encryptionAddress": "",
+          "encryptionFingerprint": "",
+          "networkPeers": [
+            {
+              "network": "I2P",
+              "identityAddress": "dvz3DIoDfP~1rNsJaMr2x~ekXlsfFnGp0IF3-CJkl9NxKKsBsW1xvU3EDC7pXiF0mD6zkYlJ4Fk1ET492o4AEvJYLEpZsdekubslO-Z6-fTRMokjTQXFn8J1ZgCxy4O2ndbT0gZ6IZ4hRn8kWdTAUmYc9SfVXEoZGxtKGCUUq82zNWcCDSN-6H2uJoc1gpAGILIQvgDY-kZn~Ldn2b3M~V7u47BIPWjUJn6S~S-6x3lAqXGSFMKsbM4DuZGvMIDFOOrgoj0JZRBDf2VgUYF2m~WYwTYEaRHz5hWG9rqZwOQHqICFveW-MJRTeFZ9~Nb3VZiZeTH2F15n29VjR6o4AooT23O5I3~MaTQnnDMGSWWwFjipRWPpTszJ5Z-7UCSGhYhIdp4fOgD1KKxj~w3XF2YJsx7o-88ZXeCefXSgeXKUShGHE7Hrj4kyob8y-o1dT1aYnhaIJmNpPG4ClkDyWdN7G1NbTS98t3NqmQue4rNqWlnY8chHJKf4HRQW-bY2AAAA",
+              "identityFingerprint": "",
+              "encryptionAddress": "",
+              "encryptionFingerprint": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "environment": "demonet",
+      "banned": [],
+      "seeds":[
+        {
+          "network": "1M5",
+          "identityAddress": "",
+          "identityFingerprint": "",
+          "encryptionAddress": "",
+          "encryptionFingerprint": "",
+          "networkPeers": [
+            {
+              "network": "I2P",
+              "identityAddress": "xBS3AgyhVTDWeiwpG9hYRykuBrNxSfjNE2oHig-dQU-vnyPVFGqgqSDc4Z5DuaVQGgHyaCC22F3ZhATckJjxYS733q6h1jaX5moZR-cP-5ui~S8I9NnYS36Td~xjxU2i0m5mrJOpopp~JTbKa12Yp5dVcH9GVtrsQ3hITq1sZshiKGXV5IDFGwKdtpTnMArsoFPel50siSyxhxSXEzrVoxgMIglJve98~zA5xWRFdnRThkgFSJG-z~geHPN9CU1DGiCI376DWFpk8BJWSkCTj8TvFMVK7pi5q0Nm6psb4UUOYwWJBW063A0iAhmy4Spbg76ASL87iy8mgJdgcVfT3zsIu9eqaWnzv9tXm88d8VhKL0ICQY-4IJK17eMIt6jYkEcmTwOJathU4h8w-jChjqHFroQoluhQQoO1UqaOzdW6xjrP00-lymj4jFNSzVf0U7m58XaUi7Wa6rYcP9hp3AGQqDLvbz0naESVA1soQUNTAGsH2Lr3POSzio67w04DAAAA",
+              "identityFingerprint": "",
+              "encryptionAddress": "",
+              "encryptionFingerprint": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "environment": "integrationnet",
+      "banned": [],
+      "seeds":[
+        {
+          "network": "1M5",
+          "identityAddress": "",
+          "identityFingerprint": "",
+          "encryptionAddress": "",
+          "encryptionFingerprint": "",
+          "networkPeers": [
+            {
+              "network": "I2P",
+              "identityAddress": "",
+              "identityFingerprint": "",
+              "encryptionAddress": "",
+              "encryptionFingerprint": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "environment": "testnet",
+      "banned": [],
+      "seeds":[
+        {
+          "network": "1M5",
+          "identityAddress": "",
+          "identityFingerprint": "",
+          "encryptionAddress": "",
+          "encryptionFingerprint": "",
+          "networkPeers": [
+            {
+              "network": "I2P",
+              "identityAddress": "f-VZS6AlrAzuBCs~4FDFOKcTa-jH8CZAugchzQUOF1iZdN0XnQOJkhzNXMK92vsYt8IAAP2MqOXkTaDjodSl6p~kVmGRBKVKH4HGQW236d-i9qmkgddUZzfbduG69ZKV3-UX-CcSKpglAtWxmvk0Dn2qvsSy6VAm54vK2iviPoRQTbR4LPmE5whHgYidFsmNUaGg07JIedTzkRo-nJUg7Gezym-cacYUpFNzKZtggwmk6Tn1L0q9xA~6R~u97R~qeXtqMGCbuVJkzIre7TiOZQv1Dh0JesZ-uoVdTpT5Egi3sV8guYA0w~z2QxYpJnqr9EfDS3bd80NZPwiE2BCtlA9KimvlUcr-lozwn6FHIuOiDr93ylPay5S~lBK7wXx9Qt9YY-3NfA4fvQAo6O7fa3Tk~1jFpGa~vSIAZ~dyqfpa4a-tz866ctD5jaq3oFxAdhlQbxkq66QZuxYDaFzQaFKUBQ~UFOu1hJnOhJS4Gm48RM9CztP4ooObJgSPhisAAAAA",
+              "identityFingerprint": "",
+              "encryptionAddress": "",
+              "encryptionFingerprint": ""
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "environment": "mainnet",
+      "banned": [],
+      "seeds":[
+        {
+          "network": "1M5",
+          "identityAddress": "",
+          "identityFingerprint": "",
+          "encryptionAddress": "",
+          "encryptionFingerprint": "",
+          "networkPeers": [
+            {
+              "network": "I2P",
+              "identityAddress": "",
+              "identityFingerprint": "",
+              "encryptionAddress": "",
+              "encryptionFingerprint": ""
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
