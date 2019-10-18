@@ -63,10 +63,15 @@ public class GraphPeerManager extends BasePeerManager {
         try (Transaction tx = db.getGraphDb().beginTx()) {
             Iterable<IndexDefinition> definitions = db.getGraphDb().schema().getIndexes(PEER_LABEL);
             if(definitions==null || ((List)definitions).size() == 0) {
-                LOG.info("NetworkPeer.address Index not found; creating...");
+                LOG.info("1M5 Indexes not found; creating...");
                 // No Address Indexes...set them up
                 db.getGraphDb().schema().indexFor(PEER_LABEL).withName("NetworkPeer.address").on("address").create();
-                LOG.info("NetworkPeer.address Index created.");
+                db.getGraphDb().schema().indexFor(PEER_LABEL).withName("NetworkPeer.1m5Address").on("1m5Address").create();
+                db.getGraphDb().schema().indexFor(PEER_LABEL).withName("NetworkPeer.torAddress").on("torAddress").create();
+                db.getGraphDb().schema().indexFor(PEER_LABEL).withName("NetworkPeer.i2pAddress").on("i2pAddress").create();
+                db.getGraphDb().schema().indexFor(PEER_LABEL).withName("NetworkPeer.sdrAddress").on("sdrAddress").create();
+                db.getGraphDb().schema().indexFor(PEER_LABEL).withName("NetworkPeer.lifiAddress").on("lifiAddress").create();
+                LOG.info("1M5 Indexes created.");
             }
             tx.success();
         } catch (Exception e) {
