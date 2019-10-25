@@ -151,6 +151,8 @@ public class GraphPeerManager extends BasePeerManager {
             } else {
                 LOG.info("Not adding peer; max number of peers reached: "+ SensorsConfig.MaxPT);
             }
+        } else {
+            LOG.info("New Peer but autocreate is false, unable to save peer.");
         }
         if(isLocalReady()
                 && isRemoteReady(p)
