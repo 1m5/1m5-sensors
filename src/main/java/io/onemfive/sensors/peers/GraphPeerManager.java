@@ -124,11 +124,16 @@ public class GraphPeerManager extends BasePeerManager {
     @Override
     public Boolean savePeer(NetworkPeer p, Boolean autocreate) {
         LOG.info("Saving NetworkPeer...");
-        if(p.getAddress()==null || p.getAddress().isEmpty()) {
+        if(p.getAddress()==null || p.getAddress().isEmpty() || p.getAddress().equals("null")) {
             LOG.info("NetworkPeer to save has no Address. Skipping.");
             return false;
         }
-        boolean updated = updatePeer(p);
+        boolean updated = false;
+        try {
+            updated = updatePeer(p);
+        } catch (Exception e) {
+            return false;
+        }
         if(updated)
             return true;
         else if(autocreate) {
@@ -158,24 +163,21 @@ public class GraphPeerManager extends BasePeerManager {
         return true;
     }
 
-    private boolean updatePeer(NetworkPeer p) {
+    private boolean updatePeer(NetworkPeer p) throws Exception {
         LOG.info("Find and Update Peer Node...");
         boolean updated = false;
-        if(p.getAddress()!= null
-                && !p.getAddress().isEmpty()
-                && !p.getAddress().equals("null")) {
-            LOG.info("Looking up Node by Address: "+p.getAddress());
-            try (Transaction tx = db.getGraphDb().beginTx()) {
-                Node n = db.getGraphDb().findNode(PEER_LABEL, "address", p.getAddress());
-                if(n!=null) {
-                    LOG.info("Found Node: updating...");
-                    toNode(p, n);
-                    updated = true;
-                }
-                tx.success();
-            } catch (Exception e) {
-                LOG.warning(e.getLocalizedMessage());
+        LOG.info("Looking up Node by Address: "+p.getAddress());
+        try (Transaction tx = db.getGraphDb().beginTx()) {
+            Node n = db.getGraphDb().findNode(PEER_LABEL, "address", p.getAddress());
+            if(n!=null) {
+                LOG.info("Found Node: updating...");
+                toNode(p, n);
+                updated = true;
             }
+            tx.success();
+        } catch (Exception e) {
+            LOG.warning(e.getLocalizedMessage());
+            throw e;
         }
         return updated;
     }
