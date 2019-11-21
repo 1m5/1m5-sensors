@@ -1,8 +1,10 @@
 package io.onemfive.sensors;
 
+import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -13,17 +15,22 @@ import java.util.Map;
  */
 public abstract class BaseSensor implements Sensor {
 
+    protected NetworkPeer.Network network;
     protected SensorManager sensorManager;
     private SensorStatus sensorStatus = SensorStatus.NOT_INITIALIZED;
     protected Integer restartAttempts = 0;
     private Envelope.Sensitivity sensitivity;
     private Integer priority;
     protected Map<String,NetworkPeer> peers = new HashMap<>();
+    protected TaskRunner taskRunner;
+    protected String directory;
 
     protected void updateStatus(SensorStatus sensorStatus) {
         this.sensorStatus = sensorStatus;
-        if(sensorManager != null) // Might be null during localized testing
+        // Might be null during localized testing
+        if(sensorManager != null) {
             sensorManager.updateSensorStatus(this.getClass().getName(), sensorStatus);
+        }
     }
 
     public BaseSensor() {}
@@ -34,21 +41,33 @@ public abstract class BaseSensor implements Sensor {
         this.priority = priority;
     }
 
+    public void setTaskRunner(TaskRunner taskRunner) {
+        this.taskRunner = taskRunner;
+    }
+
+    @Override
+    public void setNetwork(NetworkPeer.Network network) {
+        this.network = network;
+    }
+
+    @Override
+    public NetworkPeer.Network getNetwork() {
+        return network;
+    }
+
+    @Override
     public void setSensorManager(SensorManager sensorManager) {
         this.sensorManager = sensorManager;
     }
 
+    @Override
     public void setSensitivity(Envelope.Sensitivity sensitivity) {
         this.sensitivity = sensitivity;
     }
 
+    @Override
     public void setPriority(Integer priority) {
         this.priority = priority;
-    }
-
-    @Override
-    public Map<String, NetworkPeer> getPeers() {
-        return peers;
     }
 
     @Override
@@ -69,5 +88,10 @@ public abstract class BaseSensor implements Sensor {
     @Override
     public Integer getRestartAttempts() {
         return restartAttempts;
+    }
+
+    @Override
+    public File getDirectory() {
+        return sensorManager.getSensorDirectory(this.getClass().getName());
     }
 }

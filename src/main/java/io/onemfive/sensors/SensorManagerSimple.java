@@ -4,6 +4,7 @@ import io.onemfive.core.util.AppThread;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.Route;
 
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.*;
 import java.util.logging.Logger;
@@ -15,6 +16,8 @@ import java.util.logging.Logger;
 public class SensorManagerSimple extends SensorManagerBase {
 
     private Logger LOG = Logger.getLogger(SensorManagerSimple.class.getName());
+    private final long MAX_BLOCK_TIME_BETWEEN_RESTARTS = 10 * 60 * 1000; // 10 minutes
+    private Map<String,Long> sensorBlocks = new HashMap<>();
 
     @Override
     public void updateSensorStatus(String sensorID, SensorStatus sensorStatus) {
@@ -45,6 +48,9 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case NETWORK_CONNECTED: {
                 LOG.info(sensorID + " reporting connected.");
+                if(sensorBlocks.get(sensorID)!=null) {
+                    sensorBlocks.remove(sensorID);
+                }
                 break;
             }
             case NETWORK_STOPPING: {
@@ -54,7 +60,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             case NETWORK_STOPPED: {
                 LOG.info(sensorID + " reporting stopped.");
                 if(activeSensors.containsKey(sensorID)) {
-                    // Active I2P Sensor Stopped, attempt to restart
+                    // Active Sensor Stopped, attempt to restart
                     Sensor sensor = activeSensors.get(sensorID);
                     if(sensor.restart()) {
                         LOG.info(sensorID+" restarted after disconnection.");
@@ -64,6 +70,15 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case NETWORK_BLOCKED: {
                 LOG.info(sensorID + " reporting blocked.");
+                long now = System.currentTimeMillis();
+                sensorBlocks.putIfAbsent(sensorID, now);
+                if((now - sensorBlocks.get(sensorID)) > MAX_BLOCK_TIME_BETWEEN_RESTARTS) {
+                    LOG.warning(sensorID + " reporting blocked longer than "+(MAX_BLOCK_TIME_BETWEEN_RESTARTS/60000)+" minutes. Restarting...");
+                    // Active Sensor Blocked, attempt to restart
+                    activeSensors.get(sensorID).restart();
+                    // Reset blocked start time
+                    sensorBlocks.put(sensorID, now);
+                }
                 break;
             }
             case NETWORK_ERROR: {
@@ -72,6 +87,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case PAUSING: {
                 LOG.info(sensorID + " reporting pausing....");
+                // TODO: Persist messages to this sensor until unpaused then replay in order.
                 break;
             }
             case PAUSED: {
@@ -80,6 +96,7 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
             case UNPAUSING: {
                 LOG.info(sensorID + " reporting unpausing....");
+                // TODO: Replay any paused messages in order while resuming normal operations
                 break;
             }
             case SHUTTING_DOWN: {
@@ -105,13 +122,35 @@ public class SensorManagerSimple extends SensorManagerBase {
                 break;
             }
             case ERROR: {
-                LOG.info(sensorID + " reporting error....");
+                LOG.info(sensorID + " reporting error. Initiating hard restart...");
+                Sensor s = activeSensors.get(sensorID);
+                // Give stopping sensors a chance to clean up anything possible
+                activeSensors.remove(sensorID);
+                s.gracefulShutdown();
+                // Regardless if it succeeds or not, replace it with a new instance and start it up
+                try {
+                    s = (Sensor)Class.forName(sensorID).getConstructor().newInstance();
+                    if(s.start(sensorsService.getProperties())) {
+                        activeSensors.put(sensorID, s);
+                    } else {
+                        LOG.warning("Unable to hard restart sensor: "+sensorID);
+                    }
+                } catch (Exception e) {
+                    LOG.warning("Unable to create new instance of sensor for hard restart: "+sensorID);
+                }
                 break;
             }
             default: LOG.warning("Sensor Status for sensor "+sensorID+" not being handled: "+sensorStatus.name());
         }
         // Now update the Service's status based on the this Sensor's status
         sensorsService.determineStatus(sensorStatus);
+        // Now update listeners
+        if(listeners.get(sensorID)!=null) {
+            List<SensorStatusListener> sslList = listeners.get(sensorID);
+            for(SensorStatusListener ssl : sslList) {
+                ssl.statusUpdated(sensorStatus);
+            }
+        }
     }
 
     @Override
@@ -183,24 +222,6 @@ public class SensorManagerSimple extends SensorManagerBase {
             }
         }
         return highest;
-    }
-
-    @Override
-    public void sensorError(final String sensorID) {
-        // Sensor has Error, restart it if number of restarts is not greater than 3
-        if(activeSensors.get(sensorID) != null) {
-            if(activeSensors.get(sensorID).getRestartAttempts() <= 3) {
-                new AppThread(new Runnable() {
-                    @Override
-                    public void run() {
-                        activeSensors.get(sensorID).restart();
-                    }
-                }).start();
-            } else {
-                // Sensor is apparently not working. De-activate it.
-                activeSensors.remove(sensorID);
-            }
-        }
     }
 
     @Override

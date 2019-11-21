@@ -3,7 +3,10 @@ package io.onemfive.sensors;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
+import java.io.File;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public abstract class SensorManagerBase implements SensorManager {
@@ -11,6 +14,7 @@ public abstract class SensorManagerBase implements SensorManager {
     protected final Map<String, Sensor> registeredSensors = new HashMap<>();
     protected final Map<String, Sensor> activeSensors = new HashMap<>();
     protected final Map<String, Sensor> blockedSensors = new HashMap<>();
+    protected final Map<String, List<SensorStatusListener>> listeners = new HashMap<>();
 
     protected NetworkPeer localPeer;
     protected Map<String, NetworkPeer> peers = new HashMap<>();
@@ -19,11 +23,6 @@ public abstract class SensorManagerBase implements SensorManager {
 
     void setSensorsService(SensorsService sensorsService) {
         this.sensorsService = sensorsService;
-    }
-
-    @Override
-    public void suspend(Envelope envelope) {
-        sensorsService.suspend(envelope);
     }
 
     @Override
@@ -52,6 +51,14 @@ public abstract class SensorManagerBase implements SensorManager {
         }
     }
 
+    public Sensor getRegisteredSensor(String sensorName) {
+        return registeredSensors.get(sensorName);
+    }
+
+    public boolean isActive(String sensorName) {
+        return activeSensors.containsKey(sensorName);
+    }
+
     public void setLocalPeer(NetworkPeer localPeer) {
         this.localPeer = localPeer;
     }
@@ -61,17 +68,34 @@ public abstract class SensorManagerBase implements SensorManager {
     }
 
     @Override
-    public void savePeer(NetworkPeer peer) {
-        peers.put(peer.getAddress(), peer);
-    }
-
-    @Override
-    public Map<String, NetworkPeer> getAllPeers() {
-        return peers;
+    public File getSensorDirectory(String sensorName) {
+        return new File(sensorsService.getSensorsDirectory(), sensorName);
     }
 
     @Override
     public void sendToBus(Envelope envelope) {
         sensorsService.sendToBus(envelope);
+    }
+
+    @Override
+    public void suspend(Envelope envelope) {
+        sensorsService.suspend(envelope);
+    }
+
+    @Override
+    public boolean registerSensorStatusListener(String sensorId, SensorStatusListener listener) {
+        listeners.putIfAbsent(sensorId, new ArrayList<>());
+        if(!listeners.get(sensorId).contains(listener)) {
+            listeners.get(sensorId).add(listener);
+        }
+        return true;
+    }
+
+    @Override
+    public boolean unregisterSensorStatusListener(String sensorId, SensorStatusListener listener) {
+        if(listeners.get(sensorId)!=null) {
+            listeners.get(sensorId).remove(listener);
+        }
+        return true;
     }
 }
