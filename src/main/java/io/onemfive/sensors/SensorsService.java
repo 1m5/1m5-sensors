@@ -551,7 +551,7 @@ public class SensorsService extends BaseService {
 
         // Sensor Manager
         try {
-            sensorManager = (SensorManager)Class.forName(sensorManagerClass).newInstance();
+            sensorManager = (SensorManager)Class.forName(sensorManagerClass).getConstructor().newInstance();
             ((SensorManagerBase)sensorManager).setSensorsService(this);
         } catch (Exception e) {
             LOG.warning("Exception caught while creating instance of Sensor Manager "+sensorManagerClass);
@@ -561,7 +561,7 @@ public class SensorsService extends BaseService {
 
         // Peer Manager
         try {
-            peerManager = (BasePeerManager) Class.forName(peerManagerClass).newInstance();
+            peerManager = (BasePeerManager) Class.forName(peerManagerClass).getConstructor().newInstance();
             peerManager.setSensorsService(this);
         } catch (Exception e) {
             LOG.warning("Exception caught while creating instance of Peer Manager "+sensorManagerClass);
@@ -580,7 +580,7 @@ public class SensorsService extends BaseService {
             String sensitivity = sp[1];
             String priorityStr = sp[2];
             try {
-                sensor = (Sensor)Class.forName(sensorClass).newInstance();
+                sensor = (Sensor)Class.forName(sensorClass).getConstructor().newInstance();
             } catch (Exception e) {
                 LOG.warning("Exception caught while creating instance of Sensor "+sensorClass+" with sensitivity "+sensitivity+" and priority "+priorityStr);
                 e.printStackTrace();
