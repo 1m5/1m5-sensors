@@ -563,6 +563,7 @@ public class SensorsService extends BaseService {
         try {
             peerManager = (BasePeerManager) Class.forName(peerManagerClass).getConstructor().newInstance();
             peerManager.setSensorsService(this);
+            sensorManager.setPeerManager(peerManager);
         } catch (Exception e) {
             LOG.warning("Exception caught while creating instance of Peer Manager "+sensorManagerClass);
             e.printStackTrace();

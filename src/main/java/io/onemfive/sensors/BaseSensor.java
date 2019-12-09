@@ -3,6 +3,7 @@ package io.onemfive.sensors;
 import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
+import io.onemfive.sensors.peers.PeerReport;
 
 import java.io.File;
 import java.util.HashMap;

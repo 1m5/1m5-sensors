@@ -1,6 +1,8 @@
 package io.onemfive.sensors;
 
 import io.onemfive.data.Envelope;
+import io.onemfive.sensors.peers.PeerManager;
+import io.onemfive.sensors.peers.PeerReport;
 
 import java.io.File;
 import java.util.Properties;
@@ -17,6 +19,8 @@ public interface SensorManager {
     boolean isActive(String sensorName);
     Sensor selectSensor(Envelope envelope);
     void registerSensor(Sensor sensor);
+    void setPeerManager(PeerManager peerManager);
+    PeerReport getPeerReport();
     void updateSensorStatus(final String sensorID, SensorStatus sensorStatus);
     Sensor getRegisteredSensor(String sensorName);
     boolean shutdown();

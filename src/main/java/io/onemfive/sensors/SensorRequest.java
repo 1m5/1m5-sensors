@@ -18,4 +18,5 @@ public class SensorRequest extends ServiceRequest {
     public DID from;
     public DID to;
     public String content;
+    public String response;
 }

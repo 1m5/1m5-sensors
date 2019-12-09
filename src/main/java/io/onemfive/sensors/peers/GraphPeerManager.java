@@ -612,6 +612,18 @@ public class GraphPeerManager extends BasePeerManager {
         return hasRel;
     }
 
+    @Override
+    public void report(NetworkPeer networkPeer) {
+        LOG.info("NetworkPeer reported: "+networkPeer);
+    }
+
+    @Override
+    public void report(List<NetworkPeer> networkPeers) {
+        for(NetworkPeer networkPeer : networkPeers){
+            report(networkPeer);
+        }
+    }
+
     private Map<String,Object> toMap(PropertyContainer n) {
         return GraphUtil.getAttributes(n);
     }

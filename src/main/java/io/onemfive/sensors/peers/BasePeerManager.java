@@ -14,7 +14,7 @@ import java.util.logging.Logger;
 
 import static io.onemfive.core.ServiceRequest.NO_ERROR;
 
-public abstract class BasePeerManager extends TaskRunner implements PeerManager {
+public abstract class BasePeerManager extends TaskRunner implements PeerManager, PeerReport {
 
     private static final Logger LOG = Logger.getLogger(BasePeerManager.class.getName());
 
