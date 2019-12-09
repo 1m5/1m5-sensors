@@ -25,6 +25,6 @@ public class SensorRequest extends ServiceRequest {
     public NetworkPeer toPeer;
     public NetworkPeer fromPeer;
     public NetworkPeer destinationPeer;
-    public Content request;
-    public Content response;
+    public Content requestContent;
+    public Content responseContent;
 }
