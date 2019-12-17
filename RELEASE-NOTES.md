@@ -2,8 +2,9 @@
 
 ## 0.6.3 - Peer Discovery Completed
 To Do
-1. Discovery needs completed
-2. Communication between peers over I2P verified
+1. Pull in peers from 1m5-peers.json
+2. Discovery needs completed
+3. Communication between peers over I2P verified
 
 ## 0.6.4 - Peer Graph
 To Do 
