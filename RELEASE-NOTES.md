@@ -2,13 +2,12 @@
 
 ## 0.6.3 - Peer Discovery Completed
 To Do
-1. Pull in peers from 1m5-peers.json
-2. Discovery needs completed
-3. Communication between peers over I2P verified
+1. Discovery needs completed
+2. Communication between peers over I2P verified
 
 ## 0.6.4 - Peer Graph
 To Do 
-1. Robust Peer information saved to graph
+1. Robust Peer information saved to graph including services and their status
 2. Robust Peer relationship information saved to graph
 
 ## 0.6.5 - Uncensored Browsing
