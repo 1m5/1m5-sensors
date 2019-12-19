@@ -6,6 +6,7 @@ import io.onemfive.core.keyring.KeyRingService;
 import io.onemfive.core.notification.NotificationService;
 import io.onemfive.core.notification.SubscriptionRequest;
 import io.onemfive.core.util.AppThread;
+import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.*;
 import io.onemfive.data.util.DLC;
 import io.onemfive.data.util.FileUtil;
@@ -22,10 +23,9 @@ import io.onemfive.sensors.peers.PeerManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
 import java.util.*;
 import java.util.logging.Logger;
-
-import static io.onemfive.sensors.SensorsConfig.seeds;
 
 /**
  * This is the main entry point into the application by supported networks.
@@ -48,6 +48,7 @@ public class SensorsService extends BaseService {
     private BasePeerManager peerManager;
     private File sensorsDirectory;
     private Properties properties;
+    private TaskRunner taskRunner;
 
     public SensorsService() {
         super();
@@ -196,13 +197,21 @@ public class SensorsService extends BaseService {
                 return;
             }
             try {
-                obj = Class.forName(type).newInstance();
+                obj = Class.forName(type).getConstructor().newInstance();
+            } catch (NoSuchMethodException e) {
+                LOG.warning("No constructor for class: " + type);
+                deadLetter(envelope);
+                return;
+            } catch (InvocationTargetException e) {
+                LOG.warning("Unable to invoke new class of type: "+type);
+                deadLetter(envelope);
+                return;
             } catch (InstantiationException e) {
                 LOG.warning("Unable to instantiate class: " + type);
                 deadLetter(envelope);
                 return;
             } catch (IllegalAccessException e) {
-                LOG.severe(e.getLocalizedMessage());
+                LOG.severe("Class of type "+type+" is not accessible.");
                 deadLetter(envelope);
                 return;
             } catch (ClassNotFoundException e) {
@@ -559,10 +568,14 @@ public class SensorsService extends BaseService {
             return false;
         }
 
+        // TODO: use global TaskRunner instance
+        taskRunner = new TaskRunner();
+
         // Peer Manager
         try {
             peerManager = (BasePeerManager) Class.forName(peerManagerClass).getConstructor().newInstance();
             peerManager.setSensorsService(this);
+            peerManager.setTaskRunner(taskRunner);
             sensorManager.setPeerManager(peerManager);
         } catch (Exception e) {
             LOG.warning("Exception caught while creating instance of Peer Manager "+sensorManagerClass);
@@ -596,7 +609,7 @@ public class SensorsService extends BaseService {
             }
         }
         if(sensorManager.init(properties) && peerManager.init(properties)) {
-            Subscription subscription = envelope -> routeIn(envelope);
+            Subscription subscription = this::routeIn;
 
             // Subscribe to Text notifications
             SubscriptionRequest r = new SubscriptionRequest(EventMessage.Type.TEXT, subscription);
@@ -662,8 +675,9 @@ public class SensorsService extends BaseService {
             DLC.addData(AuthNRequest.class, ar, e3);
             DLC.addRoute(KeyRingService.class, KeyRingService.OPERATION_AUTHN, e3);
             // Comment out for now
-//            producer.send(e3);
+            producer.send(e3);
 //            new AppThread(peerManager).start();
+
 
             updateStatus(ServiceStatus.WAITING);
             LOG.info("Sensors Service Started.");

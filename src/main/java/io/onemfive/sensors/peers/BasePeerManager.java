@@ -6,15 +6,12 @@ import io.onemfive.data.DID;
 import io.onemfive.data.NetworkPeer;
 import io.onemfive.sensors.SensorsService;
 
-import java.util.List;
 import java.util.Properties;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 import static io.onemfive.core.ServiceRequest.NO_ERROR;
 
-public abstract class BasePeerManager extends TaskRunner implements PeerManager, PeerReport {
+public abstract class BasePeerManager implements PeerManager, PeerReport {
 
     private static final Logger LOG = Logger.getLogger(BasePeerManager.class.getName());
 
@@ -22,15 +19,24 @@ public abstract class BasePeerManager extends TaskRunner implements PeerManager,
     protected SensorsService service;
     protected NetworkPeer localPeer = new NetworkPeer();
     protected PeerDiscovery peerDiscovery;
+    protected TaskRunner taskRunner;
 
     public BasePeerManager() {}
 
-    public BasePeerManager(ThreadPoolExecutor fixedExecutor, ScheduledThreadPoolExecutor scheduledExecutor) {
-        super(fixedExecutor, scheduledExecutor);
+    public BasePeerManager(TaskRunner runner) {
+        taskRunner = runner;
+    }
+
+    public void setProperties(Properties properties) {
+        this.properties = properties;
     }
 
     public void setSensorsService(SensorsService service) {
         this.service = service;
+    }
+
+    public void setTaskRunner(TaskRunner taskRunner) {
+        this.taskRunner = taskRunner;
     }
 
     @Override
@@ -72,9 +78,16 @@ public abstract class BasePeerManager extends TaskRunner implements PeerManager,
     @Override
     public Boolean init(Properties properties) {
         this.properties = properties;
-        peerDiscovery = new PeerDiscovery(PeerDiscovery.class.getSimpleName(), service, this, properties);
-        addTask(peerDiscovery);
+        if(taskRunner==null) {
+            taskRunner = new TaskRunner();
+        }
+        peerDiscovery = new PeerDiscovery(PeerDiscovery.class.getSimpleName(), service, taskRunner, properties);
+        taskRunner.addTask(peerDiscovery);
         return true;
     }
 
+    @Override
+    public void run() {
+        init(properties);
+    }
 }

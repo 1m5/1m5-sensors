@@ -1,6 +1,7 @@
 package io.onemfive.sensors.peers;
 
 import io.onemfive.core.util.FileUtil;
+import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.NetworkPeer;
 import io.onemfive.neo4j.GraphUtil;
 import io.onemfive.neo4j.Neo4jDB;
@@ -13,8 +14,6 @@ import org.neo4j.graphdb.schema.IndexDefinition;
 
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.ScheduledThreadPoolExecutor;
-import java.util.concurrent.ThreadPoolExecutor;
 import java.util.logging.Logger;
 
 public class GraphPeerManager extends BasePeerManager {
@@ -33,8 +32,8 @@ public class GraphPeerManager extends BasePeerManager {
 
     public GraphPeerManager() { }
 
-    public GraphPeerManager(ThreadPoolExecutor fixedExecutor, ScheduledThreadPoolExecutor scheduledExecutor) {
-        super(fixedExecutor, scheduledExecutor);
+    public GraphPeerManager(TaskRunner runner) {
+        super(runner);
     }
 
     public Boolean init(Properties properties) {

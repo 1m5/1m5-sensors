@@ -2,7 +2,6 @@ package io.onemfive.sensors.peers;
 
 import io.onemfive.core.keyring.AuthNRequest;
 import io.onemfive.data.DID;
-import io.onemfive.data.Envelope;
 import io.onemfive.data.NetworkPeer;
 
 import java.util.List;
