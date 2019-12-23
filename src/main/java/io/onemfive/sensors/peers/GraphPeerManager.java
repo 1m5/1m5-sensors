@@ -501,10 +501,9 @@ public class GraphPeerManager extends BasePeerManager {
      * @param startPeer CDNPeer of request
      * @param endPeer CDNPeer target
      * @param timeSent
-     * @param timeDelivered
      * @param timeAcknowledged
      */
-    public Boolean savePeerStatusTimes(NetworkPeer startPeer, NetworkPeer endPeer, Long timeSent, Long timeDelivered, Long timeAcknowledged) {
+    public Boolean savePeerStatusTimes(NetworkPeer startPeer, NetworkPeer endPeer, Long timeSent, Long timeAcknowledged) {
         boolean addedAsReliable = false;
         startPeer.setLocal(true); // Start is always local
 
@@ -578,10 +577,7 @@ public class GraphPeerManager extends BasePeerManager {
             }
 
             LOG.info("Peer status times: {\n" +
-                    "\tremote peer received message in: "+(timeDelivered-timeSent)+"ms\n"+
-                    "\tack received by local peer in: "+(timeAcknowledged-timeDelivered)+"ms\n"+
-                    "\tround trip in: "+(timeAcknowledged-timeSent)+"ms\n"+
-                    "\t-------------------\n"+
+                    "\tack received by local peer in: "+(timeAcknowledged-timeSent)+"ms\n"+
                     "\ttotal acks: "+totalAcks+"\n"+
                     "\tavg round trip latency: "+avgAckLatency+"ms\n} of remote peer "+endPeer+" with start peer "+startPeer);
 

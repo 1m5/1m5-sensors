@@ -19,5 +19,5 @@ public interface PeerManager extends Runnable {
     NetworkPeer getRandomPeer(NetworkPeer fromPeer);
     List<NetworkPeer> getReliablesToShare(NetworkPeer fromPeer);
     void reliablesFromRemotePeer(NetworkPeer remotePeer, List<NetworkPeer> reliables);
-    Boolean savePeerStatusTimes(NetworkPeer fromPeer, NetworkPeer toPeer, Long sent, Long delivered, Long acknowledged);
+    Boolean savePeerStatusTimes(NetworkPeer fromPeer, NetworkPeer toPeer, Long sent, Long acknowledged);
 }

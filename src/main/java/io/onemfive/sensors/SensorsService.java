@@ -5,7 +5,6 @@ import io.onemfive.core.keyring.AuthNRequest;
 import io.onemfive.core.keyring.KeyRingService;
 import io.onemfive.core.notification.NotificationService;
 import io.onemfive.core.notification.SubscriptionRequest;
-import io.onemfive.core.util.AppThread;
 import io.onemfive.core.util.tasks.TaskRunner;
 import io.onemfive.data.*;
 import io.onemfive.data.util.DLC;
@@ -14,10 +13,6 @@ import io.onemfive.data.util.HashUtil;
 import io.onemfive.data.util.JSONParser;
 import io.onemfive.did.AuthenticateDIDRequest;
 import io.onemfive.did.DIDService;
-import io.onemfive.sensors.packet.CommunicationPacket;
-import io.onemfive.sensors.packet.PeerStatus;
-import io.onemfive.sensors.packet.ResponsePacket;
-import io.onemfive.sensors.packet.StatusCode;
 import io.onemfive.sensors.peers.BasePeerManager;
 import io.onemfive.sensors.peers.PeerManager;
 
@@ -219,14 +214,13 @@ public class SensorsService extends BaseService {
                 deadLetter(envelope);
                 return;
             }
-            if (obj instanceof CommunicationPacket) {
-                LOG.info("Object a CommunicationPacket...");
-                CommunicationPacket packet = (CommunicationPacket) obj;
+            if (obj instanceof Packet) {
+                LOG.info("Object a Packet...");
+                Packet packet = (Packet) obj;
                 packet.fromMap(mp);
-                packet.setTimeDelivered(System.currentTimeMillis());
                 switch (type) {
                     case "io.onemfive.sensors.packet.PeerStatus": {
-                        pingIn((PeerStatus) packet);
+                        pingIn((PeerStatusRequest) packet);
                         break;
                     }
                     case "io.onemfive.sensors.packet.ResponsePacket": {
@@ -264,7 +258,7 @@ public class SensorsService extends BaseService {
      * Request from an external NetworkPeer to see if this NetworkPeer is online.
      * Reply with known reliable peer addresses.
      */
-    public void pingIn(PeerStatus request) {
+    public void pingIn(PeerStatusRequest request) {
         LOG.info("Received PeerStatus request...");
         peerManager.reliablesFromRemotePeer(request.getFromPeer(), request.getReliablePeers());
         request.setResponding(true);
@@ -284,12 +278,12 @@ public class SensorsService extends BaseService {
             case OK: {
                 req.setTimeAcknowledged(System.currentTimeMillis());
                 LOG.info("Ok response received from request.");
-                if (req instanceof PeerStatus) {
+                if (req instanceof PeerStatusRequest) {
                     LOG.info("PeerStatus response received from PeerStatus request.");
                     LOG.info("Saving peer status times in graph...");
-                    if(peerManager.savePeerStatusTimes(req.getFromPeer(), req.getToPeer(), req.getTimeSent(), req.getTimeDelivered(), req.getTimeAcknowledged())) {
+                    if(peerManager.savePeerStatusTimes(req.getFromPeer(), req.getToPeer(), req.getTimeSent(), req.getTimeAcknowledged())) {
                         LOG.info("Updating reliables in graph...");
-                        peerManager.reliablesFromRemotePeer(req.getToPeer(), ((PeerStatus)req).getReliablePeers());
+                        peerManager.reliablesFromRemotePeer(req.getToPeer(), ((PeerStatusRequest)req).getReliablePeers());
                     }
                 } else {
                     LOG.warning("Unsupported request type received in ResponsePacket: "+req.getClass().getName());
@@ -330,7 +324,7 @@ public class SensorsService extends BaseService {
      */
     public void pingOut(NetworkPeer peerToProbe) {
         LOG.info("Sending PeerStatus request out to peer...");
-        PeerStatus ps = new PeerStatus(peerManager.getLocalPeer(), peerToProbe);
+        PeerStatusRequest ps = new PeerStatusRequest(peerManager.getLocalPeer(), peerToProbe);
         ps.setReliablePeers(peerManager.getReliablesToShare(peerManager.getLocalPeer()));
         routeOut(ps);
     }
